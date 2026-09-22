@@ -1,7 +1,7 @@
 # JSON解析
 
 单文件 JSON 格式化工具，使用 GitHub Pages 发布：
-https://haaansuuu.github.io/json-parse/
+https://j-x-lab.github.io/json-parse/
 
 支持 Python 字典常见字面量、去除外层转义、语法高亮、折叠、复制与导出。
 输入内容在浏览器中处理，不上传服务器。桌面双栏，窄屏切换面板。
