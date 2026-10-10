@@ -398,7 +398,15 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="glass"] .panel-actions #copy.copied{background:linear-gradient(145deg,#f2fff6bf,#c2e4d3a6);color:#28604c}
 :is([data-theme="neumorphic"],[data-theme="glass"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .theme-color-editor{margin-top:14px}
-.theme-color-editor>summary{font-size:12px;padding:7px 0;color:inherit}
+.theme-color-editor>summary{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:1;font-size:12px;padding:10px 8px;color:var(--menu-ink);background:var(--menu-bg);border-radius:8px;list-style:none}
+.theme-color-editor>summary::-webkit-details-marker{display:none}
+.theme-color-editor>summary:hover{background:var(--menu-hover)}
+.theme-color-editor>summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .18s}
+.theme-color-editor[open]>summary::after{transform:rotate(225deg)}
+.theme-color-state{margin-left:auto;font-size:11px;opacity:.7}
+.theme-color-editor[open] .theme-color-expand,.theme-color-editor:not([open]) .theme-color-collapse{display:none}
+#theme-colors-close{width:100%;margin-top:8px}
+@media(prefers-reduced-motion:reduce){.theme-color-editor>summary::after{transition:none}}
 #theme-color-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .theme-popover #theme-color-fields label{margin:0;color:inherit}
 #theme-color-fields input{display:block;width:100%;height:30px;padding:3px;margin-top:5px;border:1px solid var(--menu-border);border-radius:6px;background:var(--menu-bg);cursor:pointer}
@@ -471,10 +479,13 @@ main{height:100dvh;min-height:0;overflow:hidden}
       <label><input type="radio" name="theme" value="glass"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:linear-gradient(135deg,#d4c1ef,#a9dce9);--swatch-accent:#6358b7" aria-hidden="true"></span><span>磨砂玻璃</span></span></label>
       <label><input type="radio" name="theme" value="mint"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#e7f0e6;--swatch-accent:#427553" aria-hidden="true"></span><span>清新浅绿</span></span></label>
     </div></fieldset>
-    <details class="theme-color-editor"><summary>自定义当前主题颜色</summary>
+    <details class="theme-color-editor" id="theme-color-editor"><summary aria-controls="theme-color-content">自定义当前主题颜色<span class="theme-color-state"><span class="theme-color-expand">展开</span><span class="theme-color-collapse">收起</span></span></summary>
+      <div id="theme-color-content">
       <div id="theme-color-fields"></div>
       <button id="theme-colors-reset" type="button">恢复当前主题默认配色</button>
       <p id="theme-colors-status" role="status" aria-live="polite"></p>
+      <button id="theme-colors-close" type="button">完成调色 · 收起</button>
+      </div>
     </details>
 
     <label for="bot-mode">角色模式</label>
@@ -532,6 +543,12 @@ main{height:100dvh;min-height:0;overflow:hidden}
 
 <script id="theme-controls">
 const themeSettings = document.getElementById('theme-settings');
+const themeColorEditor = document.getElementById('theme-color-editor');
+function closeThemeColorEditor() {
+  themeColorEditor.open = false;
+  themeColorEditor.querySelector('summary').focus();
+}
+document.getElementById('theme-colors-close').onclick = closeThemeColorEditor;
 const themeChoices = document.querySelectorAll('input[name="theme"]');
 for (const choice of themeChoices) {
   choice.checked = choice.value === (document.documentElement.dataset.theme || 'default');
@@ -547,8 +564,12 @@ document.addEventListener('click', event => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && themeSettings.open) {
-    themeSettings.open = false;
-    themeSettings.querySelector('summary').focus();
+    event.preventDefault();
+    if (themeColorEditor.open) closeThemeColorEditor();
+    else {
+      themeSettings.open = false;
+      themeSettings.querySelector('summary').focus();
+    }
   }
 });
 </script>
