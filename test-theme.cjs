@@ -4,22 +4,23 @@ const { readFileSync } = require('node:fs');
 const { runInNewContext } = require('node:vm');
 const html = readFileSync(require('node:path').join(__dirname, 'index.html'), 'utf8');
 const scripts = ['theme-init', 'theme-controls'].map(id => html.split('<script id="' + id + '">')[1].split('</script>')[0]);
-for (const stored of [null, 'neumorphic', 'default', 'invalid', 'blocked']) {
+for (const stored of [null, 'neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass', 'default', 'invalid', 'blocked']) {
   const events = {}, dataset = {};
   let saved, focused = false;
   const settings = { open: false, contains: target => target === select, querySelector: () => ({ focus: () => { focused = true; } }) };
-  const select = { value: '', addEventListener: (name, handler) => { select[name] = handler; } };
+  const choices = ['default','neumorphic','midnight','paper','mono','terminal','glass'].map(value => ({value, checked:false, addEventListener(name, handler){this[name] = handler;}}));
+  const select = choices[0];
   const context = {
-    document: { documentElement: { dataset }, getElementById: id => id === 'theme-select' ? select : settings, addEventListener: (name, handler) => { events[name] = handler; } },
+    document: { documentElement: { dataset }, getElementById: () => settings, querySelectorAll: () => choices, addEventListener: (name, handler) => { events[name] = handler; } },
     localStorage: {
       getItem: () => { if (stored === 'blocked') throw Error('unavailable'); return stored; },
       setItem: (key, value) => { assert.equal(key, 'json-parse-theme'); if (stored === 'blocked') throw Error('unavailable'); saved = value; }
     }
   };
   runInNewContext(scripts.join('\n'), context);
-  assert.equal(select.value, stored === 'neumorphic' ? 'neumorphic' : 'default');
-  for (const theme of ['neumorphic', 'default']) {
-    select.value = theme; select.change();
+  assert.equal(choices.find(choice => choice.checked).value, ['neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass'].includes(stored) ? stored : 'default');
+  for (const theme of ['neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass', 'default']) {
+    choices.find(choice => choice.value === theme).change();
     assert.equal(dataset.theme, theme);
     if (stored !== 'blocked') assert.equal(saved, theme);
   }

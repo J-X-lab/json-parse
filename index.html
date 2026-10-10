@@ -6,7 +6,8 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23295fe8%22%2F%3E%3Cpath%20d%3D%22M25%2014h-4c-5%200-5%205-5%209v3c0%204-2%206-6%206%204%200%206%202%206%206v3c0%204%200%209%205%209h4m14-36h4c5%200%205%205%205%209v3c0%204%202%206%206%206-4%200-6%202-6%206v3c0%204%200%209-5%209h-4%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <script id="theme-init">
 try {
-  if (localStorage.getItem('json-parse-theme') === 'neumorphic') document.documentElement.dataset.theme = 'neumorphic';
+  const theme = localStorage.getItem('json-parse-theme');
+  if (['neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass'].includes(theme)) document.documentElement.dataset.theme = theme;
 } catch {} // Storage may be unavailable when opening a local file or in private mode.
 </script>
 <style>
@@ -113,7 +114,7 @@ main{height:100dvh;min-height:0;overflow:hidden}
 .theme-popover h2{margin:0 0 14px;font-size:15px;color:#24334b}
 .theme-popover label{display:block;margin-bottom:7px;font-size:12px;color:#627087}
 .theme-popover select{width:100%}
-.theme-popover select+label{margin-top:16px}
+.theme-popover .theme-choices+label{margin-top:16px}
 /* Soft ceramic surfaces: raised controls, recessed workspaces. */
 :root[data-theme="neumorphic"]{--neu-bg:#e9edf2;--neu-ink:#35425a;--neu-accent:#5264ce;--neu-raised:7px 7px 18px #cdd3dd99,-7px -7px 18px #ffffffd9;--neu-inset:inset 2px 2px 5px #cbd2dd80,inset -2px -2px 5px #fff;background:var(--neu-bg);color:var(--neu-ink)}
 [data-theme="neumorphic"] main{background:radial-gradient(ellipse at 15% 0%,#f8f9fc99,transparent 55%)}
@@ -126,8 +127,8 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="neumorphic"] :is(.toolbar,.panel){background:linear-gradient(135deg,#eff2f6,#e8ecf2);border-color:#ffffffa6;box-shadow:var(--neu-raised)}
 [data-theme="neumorphic"] .toolbar{border-radius:18px}
 [data-theme="neumorphic"] .toolbar label{color:#5e6b80}
-[data-theme="neumorphic"] :is(button,select,.theme-settings>summary){background:linear-gradient(145deg,#f8f9fc,#e6eaf1);color:var(--neu-ink);border-color:#ffffffb3;border-radius:10px;box-shadow:3px 3px 7px #c7cfdc99,-3px -3px 7px #ffffffdb}
-[data-theme="neumorphic"] :is(button,select,.theme-settings>summary):hover{border-color:#b9c3e3;color:#4355b4;background:linear-gradient(145deg,#fff,#edf0f7)}
+[data-theme="neumorphic"] :is(button,select,.theme-settings>summary){background:linear-gradient(145deg,#f8f9fc,#e6eaf1);color:var(--neu-ink);border-color:#ffffff70;border-radius:10px;box-shadow:3px 3px 6px #bac4d3,-3px -3px 6px #ffffff,inset 0 1px 0 #ffffffa6}
+[data-theme="neumorphic"] :is(button,select,.theme-settings>summary):hover{border-color:#ffffffa6;color:#4355b4;background:linear-gradient(145deg,#fff,#edf0f7)}
 [data-theme="neumorphic"] :is(button:active,.theme-settings[open]>summary){box-shadow:var(--neu-inset);background:#e7ebf2}
 [data-theme="neumorphic"] button.primary{background:linear-gradient(135deg,#7080df,#5264c8);color:#fff;border-color:#6b7bd5;box-shadow:3px 4px 9px #5667be40,inset 0 1px 0 #ffffff40}
 [data-theme="neumorphic"] button.primary:hover{background:linear-gradient(135deg,#6375d7,#4658be);color:#fff}
@@ -140,10 +141,10 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="neumorphic"] .panel-title::before{border-radius:50%;background:#9ca9bc;box-shadow:0 0 0 4px #a6b2c514}
 [data-theme="neumorphic"] .result-panel .panel-title::before{background:#7382cf;box-shadow:0 0 0 4px #7382cf14}
 [data-theme="neumorphic"] .panel-hint{color:#6b788d}
-[data-theme="neumorphic"] .panel-actions button{background:transparent;border-color:transparent;box-shadow:none;color:#5d6b80}
+[data-theme="neumorphic"] .panel-actions button{background:linear-gradient(145deg,#f8faff,#e1e7f0);border-color:#ffffff60;box-shadow:2px 2px 4px #bec8d8,-2px -2px 4px #ffffff;color:#4c5c75}
 [data-theme="neumorphic"] .panel-actions button:hover{background:#f5f7fb;color:#4355b4;box-shadow:2px 2px 5px #cbd2df80,-2px -2px 5px #fff}
 [data-theme="neumorphic"] .panel-actions button:active{box-shadow:var(--neu-inset)}
-[data-theme="neumorphic"] .panel-actions #copy{background:linear-gradient(145deg,#f8f9ff,#e5eaf7);color:#4c5db6;border-color:#ffffffa6;box-shadow:2px 2px 5px #c7cfdc99,-2px -2px 5px #fff}
+[data-theme="neumorphic"] .panel-actions #copy{background:linear-gradient(145deg,#f8f9ff,#e5eaf7);color:#4c5db6;border-color:#ffffff80;box-shadow:2px 2px 5px #c7cfdc99,-2px -2px 5px #fff}
 [data-theme="neumorphic"] .panel-actions #copy.copied{background:#e5f5eb;color:#216640}
 [data-theme="neumorphic"] .panel :is(textarea,#viewer){border-color:#dce2ec;border-radius:14px;background:#f5f7fa;box-shadow:inset 2px 2px 6px #cbd3df55,inset -1px -1px 2px #fff;color:#3b4960}
 [data-theme="neumorphic"] .panel #viewer{background:#f8f9fc}
@@ -193,8 +194,163 @@ main{height:100dvh;min-height:0;overflow:hidden}
 #preset-preview-grid .preset-preview-tile{flex-direction:column;gap:4px;padding:10px 4px;text-align:center;border-radius:12px}
 #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{border-color:#5264ce;background:#edf1ff;color:#4355b4;box-shadow:inset 0 0 0 1px #5264ce}
 [data-theme="neumorphic"] #preset-preview-dialog{background:linear-gradient(145deg,#f7f9fc,#edf0f6);border-color:#fff}
-[data-theme="neumorphic"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:#e5eaf7;box-shadow:var(--neu-inset);border-color:#9daade}
+[data-theme="neumorphic"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:#dfe5f3;box-shadow:inset 3px 3px 6px #bdc7d9,inset -3px -3px 6px #ffffff;border-color:transparent}
 @media(max-width:400px){.preset-fields .preset-preview-tile{flex-direction:column;gap:2px;padding:6px;text-align:center}#preset-preview-dialog{padding:16px}#preset-preview-grid{gap:8px}}
+:root[data-theme="midnight"]{color-scheme:dark;background:#0d1421;color:#d7e2f2}
+[data-theme="midnight"] main{background:radial-gradient(ellipse at 50% 0%,#19274288,transparent 65%)}
+[data-theme="midnight"] h1,[data-theme="midnight"] .theme-popover h2{color:#eef4ff}
+[data-theme="midnight"] :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-heading p,.preset-note,.preset-preview-badge){color:#a0aec4}
+[data-theme="midnight"] :is(.toolbar,.panel,.theme-popover){background:#151f30;border-color:#2b3a51;box-shadow:0 6px 20px #0000001f}
+[data-theme="midnight"] .panel-header{background:#192538;border-color:#2b3a51}
+[data-theme="midnight"] .panel-title::before{background:#7c91b0}
+[data-theme="midnight"] .result-panel .panel-title::before{background:#7da8ff}
+[data-theme="midnight"] :is(button,select,.theme-settings>summary){background:#1c2a40;color:#d7e2f2;border-color:#354761}
+[data-theme="midnight"] :is(button,select,.theme-settings>summary):hover{background:#273955;border-color:#6987b3}
+[data-theme="midnight"] button.primary{background:#476bd6;color:#fff;border-color:#6383e5;box-shadow:inset 0 1px 0 #ffffff20}
+[data-theme="midnight"] button.primary:hover{background:#5378e5}
+[data-theme="midnight"] button.primary:active{background:#3b5cba}
+[data-theme="midnight"] input[type=checkbox]{accent-color:#8eb1ff}
+[data-theme="midnight"] :focus-visible{outline-color:#8eb1ff}
+[data-theme="midnight"] ::selection{background:#375989;color:#fff}
+[data-theme="midnight"] :is(textarea,#viewer){background:#111b2a;color:#d7e2f2;scrollbar-color:#415674 transparent}
+[data-theme="midnight"] textarea:focus{box-shadow:inset 0 0 0 2px #587ab6}
+[data-theme="midnight"] textarea::placeholder,[data-theme="midnight"] #viewer:empty::before{color:#96a7bf}
+[data-theme="midnight"] .panel-actions button{background:transparent;color:#bdcce3;border-color:#354761}
+[data-theme="midnight"] .panel-actions :is(button,#copy):hover{background:#293d5c;border-color:#6987b3}
+[data-theme="midnight"] .panel-actions :is(button,#copy):active{background:#344e72}
+[data-theme="midnight"] .panel-actions #copy{background:#223654;color:#a9c6ff;border-color:#405c83}
+[data-theme="midnight"] .panel-actions #copy.copied{background:#193e36;color:#9ce5bf;border-color:#3e7862}
+[data-theme="midnight"] :is(summary,.json-line):hover{background:#22314a}
+[data-theme="midnight"] summary::marker{color:#91a9ce}
+[data-theme="midnight"] .json-children{border-color:#30415b}
+[data-theme="midnight"] .folded{background:#24334b;color:#b1c0d8}
+[data-theme="midnight"] .key{color:#b7a7f5}[data-theme="midnight"] .string{color:#8bd8b5}[data-theme="midnight"] .number{color:#e9bd89}[data-theme="midnight"] .boolean{color:#9fc3ff}[data-theme="midnight"] .null{color:#f2a3b5}[data-theme="midnight"] .punctuation{color:#a4b5cd}
+[data-theme="midnight"] :is(#status,#preset-status){color:#9fc8b6}
+[data-theme="midnight"] #status.error{color:#ffabb1}
+[data-theme="midnight"] .theme-settings[open]>summary{background:#273c5d;color:#aecaff;border-color:#6b8fc4}
+[data-theme="midnight"] .view-tabs{background:#162237}
+[data-theme="midnight"] .view-tabs button{background:transparent;color:#aabbd4}
+[data-theme="midnight"] .view-tabs button[aria-pressed="true"]{background:#2a4163;color:#d4e4ff;box-shadow:0 1px 4px #0003}
+[data-theme="midnight"] #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
+[data-theme="midnight"] #bot-switch:hover{background:#26395480}
+[data-theme="midnight"] :is(#preset-dialog,#preset-preview-dialog){background:#151f30;color:#d7e2f2;border-color:#354761;box-shadow:0 20px 70px #0008}
+[data-theme="midnight"] :is(#preset-dialog,#preset-preview-dialog)::backdrop{background:#050b16aa}
+[data-theme="midnight"] #preset-dialog label{color:#a0aec4}
+[data-theme="midnight"] #preset-dialog :is(input,select){background:#111b2a;color:#d7e2f2;border-color:#354761}
+[data-theme="midnight"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:#2a4163;color:#d4e4ff;border-color:#91b5ff;box-shadow:inset 0 0 0 1px #91b5ff}
+
+:root[data-theme="paper"]{--t-bg:#eee6d8;--t-surface:#fbf5ea;--t-editor:#fffaf1;--t-chrome:#f4ebdd;--t-text:#493d31;--t-muted:#756451;--t-border:#d8c9b4;--t-accent:#97582f;--t-on-accent:#fffaf1;--t-tint:#eee0ca;--t-hover:#f0e5d4;--t-key:#79513e;--t-string:#526b43;--t-number:#9a542d;--t-boolean:#735980;--t-null:#a14e5c;--t-success:#496b45;--t-error:#af3733;--t-shadow:0 5px 18px #6650390c}
+:root[data-theme="mono"]{--t-bg:#f2f2f2;--t-surface:#fff;--t-editor:#fff;--t-chrome:#fafafa;--t-text:#222;--t-muted:#666;--t-border:#d5d5d5;--t-accent:#242424;--t-on-accent:#fff;--t-tint:#e9e9e9;--t-hover:#f0f0f0;--t-key:#333;--t-string:#456451;--t-number:#775a3e;--t-boolean:#555e7b;--t-null:#845461;--t-success:#466452;--t-error:#a52f39;--t-shadow:none}
+:root[data-theme="terminal"]{color-scheme:dark;--t-bg:#080e0b;--t-surface:#0d1711;--t-editor:#09120d;--t-chrome:#122017;--t-text:#b2e9bc;--t-muted:#84b591;--t-border:#30593d;--t-accent:#91e7a4;--t-on-accent:#0a1b10;--t-tint:#1d3524;--t-hover:#182d20;--t-key:#a3ebaf;--t-string:#83cf98;--t-number:#dfd490;--t-boolean:#abd2bd;--t-null:#d4aa9b;--t-success:#9ddeac;--t-error:#ffaaa0;--t-shadow:0 0 16px #65db8806}
+:root[data-theme="glass"]{--t-bg:#e5eafa;--t-surface:#ffffffa6;--t-editor:#ffffff70;--t-chrome:#ffffff40;--t-text:#303b5d;--t-muted:#626d8b;--t-border:#ffffffd9;--t-accent:#6358b7;--t-on-accent:#fff;--t-tint:#e4e1f6;--t-hover:#edf0fc;--t-key:#765496;--t-string:#306c62;--t-number:#935d31;--t-boolean:#535d9e;--t-null:#a44f74;--t-success:#376d5e;--t-error:#b33e57;--t-shadow:0 8px 28px #5d659514,inset 0 1px 0 #ffffff80}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]){background:var(--t-bg);color:var(--t-text)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(h1,.theme-popover h2){color:var(--t-text)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-heading p,.preset-note,.preset-preview-badge){color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(.toolbar,.panel,.theme-popover){background:var(--t-surface);border-color:var(--t-border);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-header{background:var(--t-chrome);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-title::before{background:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .result-panel .panel-title::before{background:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(button,select,.theme-settings>summary){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(button,select,.theme-settings>summary):hover{background:var(--t-hover);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary{background:var(--t-accent);color:var(--t-on-accent);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary:hover{background:var(--t-accent);filter:brightness(1.12)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary:active{filter:brightness(.92)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) input[type=checkbox]{accent-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :focus-visible{outline-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) ::selection{background:var(--t-accent);color:var(--t-on-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(textarea,#viewer){background:var(--t-editor);color:var(--t-text);scrollbar-color:var(--t-muted) transparent}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) textarea:focus{box-shadow:inset 0 0 0 2px var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) textarea::placeholder,:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #viewer:empty::before{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions button{background:transparent;color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions :is(button,#copy):hover{background:var(--t-hover);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions :is(button,#copy):active{background:var(--t-tint)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions #copy{background:var(--t-tint);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions #copy.copied{color:var(--t-success);border-color:var(--t-success)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(summary,.json-line):hover{background:var(--t-hover)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) summary::marker{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .json-children{border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .folded{background:var(--t-tint);color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .key{color:var(--t-key)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .string{color:var(--t-string)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .number{color:var(--t-number)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .boolean{color:var(--t-boolean)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .null{color:var(--t-null)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .punctuation{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#status,#preset-status){color:var(--t-success)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #status.error{color:var(--t-error)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .theme-settings[open]>summary{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs{background:var(--t-chrome)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs button{background:transparent;color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs button[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #bot-switch:hover{background:var(--t-tint)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#preset-dialog,#preset-preview-dialog){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border);box-shadow:0 20px 70px #0003}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#preset-dialog,#preset-preview-dialog)::backdrop{background:#17202e66}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-dialog label{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-dialog :is(input,select){background:var(--t-editor);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent);box-shadow:inset 0 0 0 1px var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #logo-tilt .logo{background:var(--t-chrome);border-color:var(--t-border);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .logo-mark path{stroke:var(--t-accent)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .logo-mark rect{fill:var(--t-accent)}
+[data-theme="paper"] main{background:radial-gradient(ellipse at 15% 0%,#fffcf280,transparent 65%)}
+[data-theme="mono"] :is(.toolbar,.panel,.theme-popover,button,select){border-radius:4px}
+[data-theme="terminal"] :is(.toolbar,.panel,.theme-popover,button,select,#preset-dialog,#preset-preview-dialog,#preset-preview-grid .preset-preview-tile){border-radius:3px}
+[data-theme="terminal"] main{background:repeating-linear-gradient(0deg,transparent 0 3px,#80e89804 3px 4px)}
+[data-theme="terminal"] h1{color:#b5efc3;text-shadow:0 0 14px #68dc8940}
+[data-theme="glass"]{background:radial-gradient(ellipse at 5% 15%,#d4c1ef 0,transparent 55%),radial-gradient(ellipse at 95% 85%,#a9dce9 0,transparent 55%),#e8edfa}
+[data-theme="glass"] :is(.toolbar,.panel,.theme-popover,#preset-dialog,#preset-preview-dialog){backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+[data-theme="glass"] :is(.theme-popover,#preset-dialog,#preset-preview-dialog){background:#f8faffed}
+[data-theme="glass"] :is(select,option){background:#f3f5ff;color:var(--t-text)}
+@supports not (backdrop-filter:blur(1px)){[data-theme="glass"] :is(.toolbar,.panel){background:#f1f4fc}}
+
+
+.theme-popover{width:280px;max-height:calc(100dvh - 150px);overflow-y:auto;overscroll-behavior:contain}
+.theme-choices{border:0;padding:0;margin:0;min-width:0}
+.theme-choices legend{padding:0;margin-bottom:9px;font-size:12px;color:inherit}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.theme-popover .theme-grid label{position:relative;display:block;margin:0;cursor:pointer;color:inherit}
+.theme-grid input{position:absolute;width:1px;height:1px;opacity:0;margin:0}
+.theme-card{display:flex;align-items:center;gap:7px;min-height:42px;padding:8px;border:1px solid #8996ad55;border-radius:8px;background:#8996ad08;font-size:12px;white-space:nowrap}
+.theme-card:hover{background:#8996ad18;border-color:currentColor}
+.theme-grid input:checked+.theme-card{border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor;background:#8996ad18}
+.theme-grid input:focus-visible+.theme-card{outline:2px solid currentColor;outline-offset:2px}
+.theme-swatch{position:relative;width:27px;height:23px;flex-shrink:0;border:1px solid #8996ad66;border-radius:4px;background:var(--swatch-bg);overflow:hidden}
+.theme-swatch::before{content:'';position:absolute;left:4px;right:4px;top:4px;height:3px;border-radius:1px;background:var(--swatch-accent)}
+.theme-swatch::after{content:'';position:absolute;left:4px;right:4px;top:10px;bottom:4px;border-left:6px solid var(--swatch-accent);border-right:9px solid var(--swatch-accent);opacity:.35}
+[data-theme="terminal"] .theme-card{border-radius:3px}
+/* Keep native select behavior while styling the popup in supporting browsers. */
+:root{--menu-bg:#fff;--menu-ink:#24334b;--menu-border:#dce3ed;--menu-hover:#eef3ff;--menu-accent:#295fe8}
+[data-theme="neumorphic"]{--menu-bg:#edf0f6;--menu-ink:#35425a;--menu-border:#c7cfdd;--menu-hover:#e0e6f4;--menu-accent:#5264ce}
+[data-theme="midnight"]{--menu-bg:#192538;--menu-ink:#d7e2f2;--menu-border:#354761;--menu-hover:#2a4163;--menu-accent:#a9c6ff}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]){--menu-bg:var(--t-surface);--menu-ink:var(--t-text);--menu-border:var(--t-border);--menu-hover:var(--t-tint);--menu-accent:var(--t-accent)}
+[data-theme="glass"]{--menu-bg:#f3f5ff;--menu-border:#d6dcef}
+@supports (appearance:base-select){
+  select:not([hidden]),select:not([hidden])::picker(select){appearance:base-select}
+  select:not([hidden]){align-items:center;gap:10px;min-inline-size:0}
+  select:not([hidden])::picker(select){background:var(--menu-bg);color:var(--menu-ink);border:1px solid var(--menu-border);border-radius:10px;padding:5px;margin-block:6px;box-shadow:0 8px 24px #17283f26;max-height:min(320px,60dvh);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--menu-border) var(--menu-bg)}
+  select:not([hidden])::picker-icon{color:currentColor;opacity:.65;font-size:11px}
+  select:not([hidden]):open{outline:2px solid var(--menu-accent);outline-offset:2px}
+  select:not([hidden]) option{display:flex;align-items:center;gap:10px;padding:8px 10px;min-height:34px;border-radius:6px;background:var(--menu-bg);color:var(--menu-ink);font:inherit;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+  select:not([hidden]) option:is(:hover,:focus-visible,:checked){background:var(--menu-hover);color:var(--menu-ink);outline:0}
+  select:not([hidden]) option:checked{font-weight:600}
+  select:not([hidden]) option::checkmark{color:var(--menu-accent);order:1;margin-left:auto}
+  [data-theme="terminal"] select:not([hidden])::picker(select),[data-theme="terminal"] select:not([hidden]) option{border-radius:3px}
+}
+
+
+/* Material-specific control depth; focus rings stay available for keyboard use. */
+[data-theme="neumorphic"] :is(button,.theme-settings>summary):hover{box-shadow:4px 4px 8px #bdc7d7,-4px -4px 8px #fff,inset 0 1px 0 #ffffffb3}
+[data-theme="neumorphic"] :is(button:active,.theme-settings[open]>summary){box-shadow:inset 3px 3px 6px #bdc7d7,inset -3px -3px 6px #fff;background:#e5eaf2;border-color:transparent}
+[data-theme="neumorphic"] .panel-actions button:hover{background:linear-gradient(145deg,#fff,#e6ebf5);box-shadow:3px 3px 6px #bac5d8,-3px -3px 6px #fff}
+[data-theme="neumorphic"] .panel-actions :is(button,#copy):active{box-shadow:inset 2px 2px 4px #bdc7d7,inset -2px -2px 4px #fff;background:#e1e7f1;border-color:transparent}
+[data-theme="neumorphic"] .view-tabs button{background:linear-gradient(145deg,#f6f8fc,#e3e9f1);box-shadow:2px 2px 4px #c0cad9,-2px -2px 4px #fff}
+[data-theme="neumorphic"] .view-tabs button[aria-pressed="true"]{background:#dfe6f1;box-shadow:inset 2px 2px 5px #bbc6d8,inset -2px -2px 5px #fff;color:#4355a0}
+[data-theme="neumorphic"] .theme-card{border-color:transparent;background:linear-gradient(145deg,#f7f9fc,#e1e7f0);box-shadow:3px 3px 6px #c2cbda,-3px -3px 6px #fff}
+[data-theme="neumorphic"] .theme-grid input:checked+.theme-card{border-color:transparent;background:#dfe6f2;box-shadow:inset 3px 3px 6px #bdc7d9,inset -3px -3px 6px #fff;color:#4355a0}
+[data-theme="glass"] :is(button,select,.theme-settings>summary){background:linear-gradient(145deg,#ffffffb8,#d3d5ef75);border-color:#ffffffa6;box-shadow:inset 0 1px 0 #ffffffe6,inset 0 -1px 0 #9597c21a,0 3px 8px #666a9824;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+[data-theme="glass"] .panel-actions :is(button,#copy){background:linear-gradient(145deg,#ffffffc7,#cbcdea80);border-color:#ffffffa6;box-shadow:inset 0 1px 0 #fff,0 2px 6px #646a962b}
+[data-theme="glass"] :is(button,select,.theme-settings>summary):hover,[data-theme="glass"] .panel-actions :is(button,#copy):hover{background:linear-gradient(145deg,#ffffffe6,#d9d4f3b3);border-color:#ffffffd9;box-shadow:inset 0 1px 0 #fff,0 4px 12px #6961a833}
+[data-theme="glass"] :is(button:active,.theme-settings[open]>summary),[data-theme="glass"] .panel-actions :is(button,#copy):active{background:linear-gradient(145deg,#b9b5e28c,#eeecffb3);border-color:#ffffff80;box-shadow:inset 0 2px 5px #645d9630,0 1px 2px #ffffff80}
+[data-theme="glass"] button.primary{background:linear-gradient(145deg,#8475ceeb,#6556b7f2);border-color:#ffffff60;box-shadow:inset 0 1px 0 #ffffff80,0 3px 10px #62559c40;color:#fff}
+[data-theme="glass"] button.primary:hover{background:linear-gradient(145deg,#9182d8,#7160c4);filter:none}
+[data-theme="glass"] .theme-card{background:linear-gradient(145deg,#ffffffb8,#d4d8f180);border-color:#ffffffb3;box-shadow:inset 0 1px 0 #fff,0 2px 7px #666a9824}
+[data-theme="glass"] .theme-grid input:checked+.theme-card,[data-theme="glass"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],[data-theme="glass"] .view-tabs button[aria-pressed="true"]{background:linear-gradient(135deg,#c1b4eda6,#dde4ffb3);border-color:#ffffffb3;box-shadow:inset 0 1px 0 #ffffffcc,0 3px 10px #7363b538;color:#493881}
+[data-theme="glass"] .panel-actions #copy.copied{background:linear-gradient(145deg,#f2fff6bf,#c2e4d3a6);color:#28604c}
+:is([data-theme="neumorphic"],[data-theme="glass"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 </style>
 <main>
 <header class="page-header">
@@ -211,8 +367,15 @@ main{height:100dvh;min-height:0;overflow:hidden}
   </summary>
   <div class="theme-popover" id="theme-popover">
     <h2>设置</h2>
-    <label for="theme-select">界面主题</label>
-    <select id="theme-select"><option value="default">默认</option><option value="neumorphic">新拟态</option></select>
+    <fieldset class="theme-choices"><legend>界面主题</legend><div class="theme-grid">
+      <label><input type="radio" name="theme" value="default"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#f3f5f9;--swatch-accent:#295fe8" aria-hidden="true"></span><span>默认</span></span></label>
+      <label><input type="radio" name="theme" value="neumorphic"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#e9edf2;--swatch-accent:#6676bf" aria-hidden="true"></span><span>新拟态</span></span></label>
+      <label><input type="radio" name="theme" value="midnight"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#111b2a;--swatch-accent:#8eb1ff" aria-hidden="true"></span><span>午夜蓝</span></span></label>
+      <label><input type="radio" name="theme" value="paper"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#fbf5ea;--swatch-accent:#97582f" aria-hidden="true"></span><span>奶油纸张</span></span></label>
+      <label><input type="radio" name="theme" value="mono"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#fff;--swatch-accent:#242424" aria-hidden="true"></span><span>极简黑白</span></span></label>
+      <label><input type="radio" name="theme" value="terminal"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#09120d;--swatch-accent:#91e7a4" aria-hidden="true"></span><span>复古终端</span></span></label>
+      <label><input type="radio" name="theme" value="glass"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:linear-gradient(135deg,#d4c1ef,#a9dce9);--swatch-accent:#6358b7" aria-hidden="true"></span><span>磨砂玻璃</span></span></label>
+    </div></fieldset>
     <label for="bot-mode">角色模式</label>
     <select id="bot-mode"><option value="presets">按预设点击随机切换</option><option value="custom">自定义</option></select>
     <button id="preset-open" type="button">编辑角色预设…</button>
@@ -268,13 +431,14 @@ main{height:100dvh;min-height:0;overflow:hidden}
 
 <script id="theme-controls">
 const themeSettings = document.getElementById('theme-settings');
-const themeSelect = document.getElementById('theme-select');
-themeSelect.value = document.documentElement.dataset.theme === 'neumorphic' ? 'neumorphic' : 'default';
-themeSelect.addEventListener('change', () => {
-  const theme = themeSelect.value === 'neumorphic' ? 'neumorphic' : 'default';
-  document.documentElement.dataset.theme = theme;
-  try { localStorage.setItem('json-parse-theme', theme); } catch {}
-});
+const themeChoices = document.querySelectorAll('input[name="theme"]');
+for (const choice of themeChoices) {
+  choice.checked = choice.value === (document.documentElement.dataset.theme || 'default');
+  choice.addEventListener('change', () => {
+    document.documentElement.dataset.theme = choice.value;
+    try { localStorage.setItem('json-parse-theme', choice.value); } catch {}
+  });
+}
 document.addEventListener('click', event => {
   if (!themeSettings.contains(event.target)) themeSettings.open = false;
 });
