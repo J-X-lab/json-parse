@@ -7,9 +7,53 @@
 <script id="theme-init">
 try {
   const theme = localStorage.getItem('json-parse-theme');
-  if (['neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass'].includes(theme)) document.documentElement.dataset.theme = theme;
+  if (['neumorphic', 'midnight', 'paper', 'mono', 'terminal', 'glass', 'mint'].includes(theme)) document.documentElement.dataset.theme = theme;
 } catch {} // Storage may be unavailable when opening a local file or in private mode.
 </script>
+<script id="theme-colors-init">
+const themeColorFields = ['background','surface','text','accent','key','string','number','boolean','null','punctuation'];
+const themeColorDefaults = {
+  default:['#f3f5f9','#ffffff','#24334b','#295fe8','#7136a8','#245b36','#a14e16','#7d40af','#b43f64','#7a879b'],
+  neumorphic:['#e9edf2','#e9edf2','#35425a','#5264ce','#6461a7','#347468','#a26939','#7d40af','#b43f64','#7a879b'],
+  midnight:['#0d1421','#151f30','#d7e2f2','#476bd6','#b7a7f5','#8bd8b5','#e9bd89','#9fc3ff','#f2a3b5','#a4b5cd'],
+  paper:['#eee6d8','#fbf5ea','#493d31','#97582f','#79513e','#526b43','#9a542d','#735980','#a14e5c','#756451'],
+  mono:['#f2f2f2','#ffffff','#222222','#242424','#333333','#456451','#775a3e','#555e7b','#845461','#666666'],
+  terminal:['#080e0b','#0d1711','#b2e9bc','#91e7a4','#a3ebaf','#83cf98','#dfd490','#abd2bd','#d4aa9b','#84b591'],
+  glass:['#e5eafa','#f3f5ff','#303b5d','#6358b7','#765496','#306c62','#935d31','#535d9e','#a44f74','#626d8b'],
+  mint:['#e7f0e6','#f4f9ef','#2f4939','#427553','#496850','#376b58','#866135','#62724a','#93615f','#657b69']
+};
+function readThemeColors(value) {
+  const result = {};
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
+  for (const theme of Object.keys(themeColorDefaults)) {
+    const colors = value[theme];
+    if (Array.isArray(colors) && colors.length === themeColorFields.length && colors.every(color => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) result[theme] = colors;
+  }
+  return result;
+}
+let customThemeColors = {};
+try { customThemeColors = readThemeColors(JSON.parse(localStorage.getItem('json-parse-theme-colors'))); } catch {}
+function themeAccentInk(hex) {
+  const rgb = hex.match(/[0-9a-f]{2}/gi).map(value => {
+    const channel = parseInt(value,16) / 255;
+    return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+  });
+  return .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2] > .179 ? '#000000' : '#ffffff';
+}
+function applyThemeColors() {
+  const root = document.documentElement;
+  const theme = root.dataset.theme || 'default';
+  const colors = customThemeColors[theme];
+  for (const field of [...themeColorFields, 'accent-ink']) root.style.removeProperty('--custom-' + field);
+  delete root.dataset.customColors;
+  if (!colors) return;
+  root.dataset.customColors = 'true';
+  themeColorFields.forEach((field, index) => root.style.setProperty('--custom-' + field, colors[index]));
+  root.style.setProperty('--custom-accent-ink', themeAccentInk(colors[3]));
+}
+applyThemeColors();
+</script>
+
 <style>
 *{box-sizing:border-box}
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#24334b;background:#f3f5f9;font-synthesis:none}
@@ -239,53 +283,55 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="midnight"] #preset-dialog :is(input,select){background:#111b2a;color:#d7e2f2;border-color:#354761}
 [data-theme="midnight"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:#2a4163;color:#d4e4ff;border-color:#91b5ff;box-shadow:inset 0 0 0 1px #91b5ff}
 
+
+:root[data-theme="mint"]{--t-bg:#e7f0e6;--t-surface:#f4f9ef;--t-editor:#f8fbf5;--t-chrome:#eaf3e7;--t-text:#2f4939;--t-muted:#657b69;--t-border:#c7d9c6;--t-accent:#427553;--t-on-accent:#fff;--t-tint:#dcebd8;--t-hover:#e3efde;--t-key:#496850;--t-string:#376b58;--t-number:#866135;--t-boolean:#62724a;--t-null:#93615f;--t-success:#427553;--t-error:#a44141;--t-shadow:0 5px 18px #355c3910}
 :root[data-theme="paper"]{--t-bg:#eee6d8;--t-surface:#fbf5ea;--t-editor:#fffaf1;--t-chrome:#f4ebdd;--t-text:#493d31;--t-muted:#756451;--t-border:#d8c9b4;--t-accent:#97582f;--t-on-accent:#fffaf1;--t-tint:#eee0ca;--t-hover:#f0e5d4;--t-key:#79513e;--t-string:#526b43;--t-number:#9a542d;--t-boolean:#735980;--t-null:#a14e5c;--t-success:#496b45;--t-error:#af3733;--t-shadow:0 5px 18px #6650390c}
 :root[data-theme="mono"]{--t-bg:#f2f2f2;--t-surface:#fff;--t-editor:#fff;--t-chrome:#fafafa;--t-text:#222;--t-muted:#666;--t-border:#d5d5d5;--t-accent:#242424;--t-on-accent:#fff;--t-tint:#e9e9e9;--t-hover:#f0f0f0;--t-key:#333;--t-string:#456451;--t-number:#775a3e;--t-boolean:#555e7b;--t-null:#845461;--t-success:#466452;--t-error:#a52f39;--t-shadow:none}
 :root[data-theme="terminal"]{color-scheme:dark;--t-bg:#080e0b;--t-surface:#0d1711;--t-editor:#09120d;--t-chrome:#122017;--t-text:#b2e9bc;--t-muted:#84b591;--t-border:#30593d;--t-accent:#91e7a4;--t-on-accent:#0a1b10;--t-tint:#1d3524;--t-hover:#182d20;--t-key:#a3ebaf;--t-string:#83cf98;--t-number:#dfd490;--t-boolean:#abd2bd;--t-null:#d4aa9b;--t-success:#9ddeac;--t-error:#ffaaa0;--t-shadow:0 0 16px #65db8806}
 :root[data-theme="glass"]{--t-bg:#e5eafa;--t-surface:#ffffffa6;--t-editor:#ffffff70;--t-chrome:#ffffff40;--t-text:#303b5d;--t-muted:#626d8b;--t-border:#ffffffd9;--t-accent:#6358b7;--t-on-accent:#fff;--t-tint:#e4e1f6;--t-hover:#edf0fc;--t-key:#765496;--t-string:#306c62;--t-number:#935d31;--t-boolean:#535d9e;--t-null:#a44f74;--t-success:#376d5e;--t-error:#b33e57;--t-shadow:0 8px 28px #5d659514,inset 0 1px 0 #ffffff80}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]){background:var(--t-bg);color:var(--t-text)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(h1,.theme-popover h2){color:var(--t-text)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-heading p,.preset-note,.preset-preview-badge){color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(.toolbar,.panel,.theme-popover){background:var(--t-surface);border-color:var(--t-border);box-shadow:var(--t-shadow)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-header{background:var(--t-chrome);border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-title::before{background:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .result-panel .panel-title::before{background:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(button,select,.theme-settings>summary){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(button,select,.theme-settings>summary):hover{background:var(--t-hover);border-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary{background:var(--t-accent);color:var(--t-on-accent);border-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary:hover{background:var(--t-accent);filter:brightness(1.12)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) button.primary:active{filter:brightness(.92)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) input[type=checkbox]{accent-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :focus-visible{outline-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) ::selection{background:var(--t-accent);color:var(--t-on-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(textarea,#viewer){background:var(--t-editor);color:var(--t-text);scrollbar-color:var(--t-muted) transparent}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) textarea:focus{box-shadow:inset 0 0 0 2px var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) textarea::placeholder,:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #viewer:empty::before{color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions button{background:transparent;color:var(--t-text);border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions :is(button,#copy):hover{background:var(--t-hover);border-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions :is(button,#copy):active{background:var(--t-tint)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions #copy{background:var(--t-tint);color:var(--t-text);border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .panel-actions #copy.copied{color:var(--t-success);border-color:var(--t-success)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(summary,.json-line):hover{background:var(--t-hover)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) summary::marker{color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .json-children{border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .folded{background:var(--t-tint);color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .key{color:var(--t-key)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .string{color:var(--t-string)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .number{color:var(--t-number)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .boolean{color:var(--t-boolean)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .null{color:var(--t-null)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .punctuation{color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#status,#preset-status){color:var(--t-success)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #status.error{color:var(--t-error)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .theme-settings[open]>summary{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs{background:var(--t-chrome)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs button{background:transparent;color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .view-tabs button[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);box-shadow:var(--t-shadow)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #bot-switch:hover{background:var(--t-tint)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#preset-dialog,#preset-preview-dialog){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border);box-shadow:0 20px 70px #0003}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) :is(#preset-dialog,#preset-preview-dialog)::backdrop{background:#17202e66}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-dialog label{color:var(--t-muted)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-dialog :is(input,select){background:var(--t-editor);color:var(--t-text);border-color:var(--t-border)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent);box-shadow:inset 0 0 0 1px var(--t-accent)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) #logo-tilt .logo{background:var(--t-chrome);border-color:var(--t-border);box-shadow:var(--t-shadow)}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .logo-mark path{stroke:var(--t-accent)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]) .logo-mark rect{fill:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]){background:var(--t-bg);color:var(--t-text)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(h1,.theme-popover h2){color:var(--t-text)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-heading p,.preset-note,.preset-preview-badge){color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(.toolbar,.panel,.theme-popover){background:var(--t-surface);border-color:var(--t-border);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-header{background:var(--t-chrome);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-title::before{background:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .result-panel .panel-title::before{background:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(button,select,.theme-settings>summary){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(button,select,.theme-settings>summary):hover{background:var(--t-hover);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) button.primary{background:var(--t-accent);color:var(--t-on-accent);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) button.primary:hover{background:var(--t-accent);filter:brightness(1.12)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) button.primary:active{filter:brightness(.92)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) input[type=checkbox]{accent-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :focus-visible{outline-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) ::selection{background:var(--t-accent);color:var(--t-on-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(textarea,#viewer){background:var(--t-editor);color:var(--t-text);scrollbar-color:var(--t-muted) transparent}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) textarea:focus{box-shadow:inset 0 0 0 2px var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) textarea::placeholder,:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #viewer:empty::before{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions button{background:transparent;color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions :is(button,#copy):hover{background:var(--t-hover);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions :is(button,#copy):active{background:var(--t-tint)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions #copy{background:var(--t-tint);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions #copy.copied{color:var(--t-success);border-color:var(--t-success)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(summary,.json-line):hover{background:var(--t-hover)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) summary::marker{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .json-children{border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .folded{background:var(--t-tint);color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .key{color:var(--t-key)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .string{color:var(--t-string)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .number{color:var(--t-number)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .boolean{color:var(--t-boolean)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .null{color:var(--t-null)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .punctuation{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(#status,#preset-status){color:var(--t-success)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #status.error{color:var(--t-error)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .theme-settings[open]>summary{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .view-tabs{background:var(--t-chrome)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .view-tabs button{background:transparent;color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .view-tabs button[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #bot-switch:hover{background:var(--t-tint)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(#preset-dialog,#preset-preview-dialog){background:var(--t-surface);color:var(--t-text);border-color:var(--t-border);box-shadow:0 20px 70px #0003}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(#preset-dialog,#preset-preview-dialog)::backdrop{background:#17202e66}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #preset-dialog label{color:var(--t-muted)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #preset-dialog :is(input,select){background:var(--t-editor);color:var(--t-text);border-color:var(--t-border)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:var(--t-tint);color:var(--t-text);border-color:var(--t-accent);box-shadow:inset 0 0 0 1px var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #logo-tilt .logo{background:var(--t-chrome);border-color:var(--t-border);box-shadow:var(--t-shadow)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .logo-mark path{stroke:var(--t-accent)}:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .logo-mark rect{fill:var(--t-accent)}
 [data-theme="paper"] main{background:radial-gradient(ellipse at 15% 0%,#fffcf280,transparent 65%)}
 [data-theme="mono"] :is(.toolbar,.panel,.theme-popover,button,select){border-radius:4px}
 [data-theme="terminal"] :is(.toolbar,.panel,.theme-popover,button,select,#preset-dialog,#preset-preview-dialog,#preset-preview-grid .preset-preview-tile){border-radius:3px}
@@ -316,7 +362,7 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :root{--menu-bg:#fff;--menu-ink:#24334b;--menu-border:#dce3ed;--menu-hover:#eef3ff;--menu-accent:#295fe8}
 [data-theme="neumorphic"]{--menu-bg:#edf0f6;--menu-ink:#35425a;--menu-border:#c7cfdd;--menu-hover:#e0e6f4;--menu-accent:#5264ce}
 [data-theme="midnight"]{--menu-bg:#192538;--menu-ink:#d7e2f2;--menu-border:#354761;--menu-hover:#2a4163;--menu-accent:#a9c6ff}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"]){--menu-bg:var(--t-surface);--menu-ink:var(--t-text);--menu-border:var(--t-border);--menu-hover:var(--t-tint);--menu-accent:var(--t-accent)}
+:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]){--menu-bg:var(--t-surface);--menu-ink:var(--t-text);--menu-border:var(--t-border);--menu-hover:var(--t-tint);--menu-accent:var(--t-accent)}
 [data-theme="glass"]{--menu-bg:#f3f5ff;--menu-border:#d6dcef}
 @supports (appearance:base-select){
   select:not([hidden]),select:not([hidden])::picker(select){appearance:base-select}
@@ -351,7 +397,55 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="glass"] .theme-grid input:checked+.theme-card,[data-theme="glass"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],[data-theme="glass"] .view-tabs button[aria-pressed="true"]{background:linear-gradient(135deg,#c1b4eda6,#dde4ffb3);border-color:#ffffffb3;box-shadow:inset 0 1px 0 #ffffffcc,0 3px 10px #7363b538;color:#493881}
 [data-theme="glass"] .panel-actions #copy.copied{background:linear-gradient(145deg,#f2fff6bf,#c2e4d3a6);color:#28604c}
 :is([data-theme="neumorphic"],[data-theme="glass"]) #bot-switch{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.theme-color-editor{margin-top:14px}
+.theme-color-editor>summary{font-size:12px;padding:7px 0;color:inherit}
+#theme-color-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.theme-popover #theme-color-fields label{margin:0;color:inherit}
+#theme-color-fields input{display:block;width:100%;height:30px;padding:3px;margin-top:5px;border:1px solid var(--menu-border);border-radius:6px;background:var(--menu-bg);cursor:pointer}
+#theme-colors-reset{width:100%}
+#theme-colors-status{font-size:11px;line-height:1.6;opacity:.8;margin:8px 0 0}
+/* Overrides change colors only; each theme keeps its geometry and material. */
+:root[data-custom-colors]{background:var(--custom-background);color:var(--custom-text);--custom-muted:color-mix(in srgb,var(--custom-text) 75%,var(--custom-surface));--custom-edge:color-mix(in srgb,var(--custom-text) 25%,var(--custom-surface));--custom-tint:color-mix(in srgb,var(--custom-accent) 16%,var(--custom-surface));--menu-bg:var(--custom-surface);--menu-ink:var(--custom-text);--menu-border:var(--custom-edge);--menu-hover:var(--custom-tint);--menu-accent:var(--custom-accent)}
+:root[data-custom-colors] main{background:transparent}
+:root[data-custom-colors] :is(.toolbar,.panel,.theme-popover,#preset-dialog,#preset-preview-dialog){background:var(--custom-surface);border-color:var(--custom-edge);color:var(--custom-text)}
+:root[data-custom-colors] .panel-title::before{background:var(--custom-muted)}
+:root[data-custom-colors] .result-panel .panel-title::before{background:var(--custom-accent)}
+:root[data-custom-colors] .panel-header{background:color-mix(in srgb,var(--custom-surface) 90%,var(--custom-background));border-color:var(--custom-edge)}
+:root[data-custom-colors] :is(h1,.theme-popover h2,.preset-heading h2,.panel-title){color:var(--custom-text);text-shadow:none}
+:root[data-custom-colors] :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-note,.preset-heading p,.preset-preview-badge),:root[data-custom-colors] #preset-dialog label{color:var(--custom-muted)}
+:root[data-custom-colors] :is(textarea,#viewer){background:var(--custom-surface);color:var(--custom-text);scrollbar-color:var(--custom-edge) transparent}
+:root[data-custom-colors] textarea:focus{box-shadow:inset 0 0 0 2px var(--custom-accent)}
+:root[data-custom-colors] textarea::placeholder,:root[data-custom-colors] #viewer:empty::before{color:var(--custom-muted)}
+:root[data-custom-colors] :is(button,select,.theme-settings>summary,.theme-card),:root[data-custom-colors] .panel-actions :is(button,#copy),:root[data-custom-colors] #preset-dialog :is(input,select){background:var(--custom-surface);color:var(--custom-text);border-color:var(--custom-edge)}
+:root[data-custom-colors] :is(button,select,.theme-settings>summary):hover,:root[data-custom-colors] .panel-actions :is(button,#copy):hover{background:var(--custom-tint);color:var(--custom-text);border-color:var(--custom-accent)}
+:root[data-custom-colors] :is(button,select):active,:root[data-custom-colors] .panel-actions :is(button,#copy):active{background:var(--custom-tint)}
+:root[data-custom-colors] button.primary,:root[data-custom-colors] button.primary:hover,:root[data-custom-colors] button.primary:active{background:var(--custom-accent);color:var(--custom-accent-ink);border-color:var(--custom-accent)}
+:root[data-custom-colors] .panel-actions #copy.copied{color:var(--custom-accent);border-color:var(--custom-accent)}
+:root[data-custom-colors] :focus-visible{outline-color:var(--custom-accent)}
+:root[data-custom-colors] input[type=checkbox]{accent-color:var(--custom-accent)}
+:root[data-custom-colors] ::selection{background:var(--custom-accent);color:var(--custom-accent-ink)}
+:root[data-custom-colors] .view-tabs{background:var(--custom-background)}
+:root[data-custom-colors] .view-tabs button{background:var(--custom-surface);color:var(--custom-muted)}
+:root[data-custom-colors] .view-tabs button[aria-pressed="true"],:root[data-custom-colors] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],:root[data-custom-colors] .theme-grid input:checked+.theme-card,:root[data-custom-colors] .theme-settings[open]>summary{background:var(--custom-tint);color:var(--custom-text);border-color:var(--custom-accent)}
+:root[data-custom-colors] :is(summary,.json-line):hover{background:var(--custom-tint)}
+:root[data-custom-colors] .json-children{border-color:var(--custom-edge)}
+:root[data-custom-colors] .folded{background:var(--custom-tint);color:var(--custom-muted)}
+:root[data-custom-colors] summary::marker{color:var(--custom-muted)}
+:root[data-custom-colors] .key{color:var(--custom-key)}:root[data-custom-colors] .string{color:var(--custom-string)}:root[data-custom-colors] .number{color:var(--custom-number)}:root[data-custom-colors] .boolean{color:var(--custom-boolean)}:root[data-custom-colors] .null{color:var(--custom-null)}:root[data-custom-colors] .punctuation{color:var(--custom-punctuation)}
+:root[data-custom-colors] #status:not(.error),:root[data-custom-colors] #preset-status{color:var(--custom-muted)}
+:root[data-custom-colors] #logo-tilt .logo{background:var(--custom-background);border-color:var(--custom-edge)}
+:root[data-custom-colors] .logo-mark path{stroke:var(--custom-accent)}:root[data-custom-colors] .logo-mark rect{fill:var(--custom-accent)}
+:root[data-custom-colors][data-theme="neumorphic"]{--neu-bg:var(--custom-background);--neu-raised:5px 5px 12px color-mix(in srgb,var(--custom-background) 78%,#000),-5px -5px 12px color-mix(in srgb,var(--custom-background) 40%,#fff);--neu-inset:inset 3px 3px 6px color-mix(in srgb,var(--custom-surface) 78%,#000),inset -3px -3px 6px color-mix(in srgb,var(--custom-surface) 40%,#fff)}
+:root[data-custom-colors][data-theme="neumorphic"] :is(button,.theme-settings>summary,.theme-card),:root[data-custom-colors][data-theme="neumorphic"] .panel-actions :is(button,#copy){background:linear-gradient(145deg,color-mix(in srgb,var(--custom-surface) 65%,#fff),var(--custom-surface));border-color:transparent;box-shadow:var(--neu-raised)}
+:root[data-custom-colors][data-theme="neumorphic"] :is(button:active,.theme-settings[open]>summary),:root[data-custom-colors][data-theme="neumorphic"] .panel-actions :is(button,#copy):active,:root[data-custom-colors][data-theme="neumorphic"] .theme-grid input:checked+.theme-card,:root[data-custom-colors][data-theme="neumorphic"] .view-tabs button[aria-pressed="true"],:root[data-custom-colors][data-theme="neumorphic"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:var(--custom-tint);border-color:transparent;box-shadow:var(--neu-inset)}
+:root[data-custom-colors][data-theme="glass"]{background:radial-gradient(ellipse at 5% 15%,color-mix(in srgb,var(--custom-accent) 22%,transparent),transparent 60%),var(--custom-background)}
+:root[data-custom-colors][data-theme="glass"] :is(.toolbar,.panel){background:color-mix(in srgb,var(--custom-surface) 70%,transparent);border-color:color-mix(in srgb,var(--custom-surface) 65%,#fff)}
+:root[data-custom-colors][data-theme="glass"] :is(button,.theme-settings>summary,.theme-card),:root[data-custom-colors][data-theme="glass"] .panel-actions :is(button,#copy){background:linear-gradient(145deg,color-mix(in srgb,var(--custom-surface) 80%,transparent),color-mix(in srgb,var(--custom-accent) 18%,transparent));border-color:color-mix(in srgb,var(--custom-surface) 60%,#fff)}
+:root[data-custom-colors][data-theme="glass"] .theme-grid input:checked+.theme-card,:root[data-custom-colors][data-theme="glass"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],:root[data-custom-colors][data-theme="glass"] .view-tabs button[aria-pressed="true"]{background:var(--custom-tint)}
+:root[data-custom-colors]:is([data-theme="glass"],[data-theme="neumorphic"]) button.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--custom-accent) 85%,#fff),var(--custom-accent));color:var(--custom-accent-ink)}
+:root[data-custom-colors] #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
 </style>
+
 <main>
 <header class="page-header">
   <div class="brand"><div id="logo-tilt" aria-hidden="true"><div class="logo"><svg class="logo-mark" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M17 12h-3a3 3 0 0 0-3 3v5c0 2-1 3-3 4 2 1 3 2 3 4v5a3 3 0 0 0 3 3h3" stroke="#B8EEFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 12h3a3 3 0 0 1 3 3v5c0 2 1 3 3 4-2 1-3 2-3 4v5a3 3 0 0 1-3 3h-3" stroke="#8FA9FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 18v12" stroke="#647DAF" stroke-width="1.5"/><rect x="21" y="15" width="6" height="6" rx="1.8" fill="#79E4EF"/><rect x="21" y="27" width="6" height="6" rx="1.8" fill="#B5C3FF"/><path d="M17 5h14M17 43h14" stroke="#FFFFFF" stroke-opacity=".15" stroke-linecap="round"/></svg></div></div><div><h1>JSON解析</h1><p class="subtitle">格式化、校验与阅读，一处完成</p></div></div>
@@ -375,7 +469,14 @@ main{height:100dvh;min-height:0;overflow:hidden}
       <label><input type="radio" name="theme" value="mono"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#fff;--swatch-accent:#242424" aria-hidden="true"></span><span>极简黑白</span></span></label>
       <label><input type="radio" name="theme" value="terminal"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#09120d;--swatch-accent:#91e7a4" aria-hidden="true"></span><span>复古终端</span></span></label>
       <label><input type="radio" name="theme" value="glass"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:linear-gradient(135deg,#d4c1ef,#a9dce9);--swatch-accent:#6358b7" aria-hidden="true"></span><span>磨砂玻璃</span></span></label>
+      <label><input type="radio" name="theme" value="mint"><span class="theme-card"><span class="theme-swatch" style="--swatch-bg:#e7f0e6;--swatch-accent:#427553" aria-hidden="true"></span><span>清新浅绿</span></span></label>
     </div></fieldset>
+    <details class="theme-color-editor"><summary>自定义当前主题颜色</summary>
+      <div id="theme-color-fields"></div>
+      <button id="theme-colors-reset" type="button">恢复当前主题默认配色</button>
+      <p id="theme-colors-status" role="status" aria-live="polite"></p>
+    </details>
+
     <label for="bot-mode">角色模式</label>
     <select id="bot-mode"><option value="presets">按预设点击随机切换</option><option value="custom">自定义</option></select>
     <button id="preset-open" type="button">编辑角色预设…</button>
@@ -436,6 +537,8 @@ for (const choice of themeChoices) {
   choice.checked = choice.value === (document.documentElement.dataset.theme || 'default');
   choice.addEventListener('change', () => {
     document.documentElement.dataset.theme = choice.value;
+    applyThemeColors();
+    refreshThemeColorControls();
     try { localStorage.setItem('json-parse-theme', choice.value); } catch {}
   });
 }
@@ -449,6 +552,56 @@ document.addEventListener('keydown', event => {
   }
 });
 </script>
+<script id="theme-color-controls">
+const themeColorLabels = ['页面背景','面板底色','正文文字','强调色','字段名','字符串','数字','布尔值','空值','标点'];
+const themeColorInputs = themeColorFields.map((field, index) => {
+  const label = document.createElement('label');
+  label.textContent = themeColorLabels[index];
+  const input = document.createElement('input');
+  input.type = 'color'; input.id = 'theme-color-' + field;
+  label.htmlFor = input.id;
+  label.append(input); document.getElementById('theme-color-fields').append(label);
+  input.addEventListener('input', () => {
+    const theme = document.documentElement.dataset.theme || 'default';
+    const colors = [...(customThemeColors[theme] || themeColorDefaults[theme])];
+    colors[index] = input.value;
+    customThemeColors[theme] = colors;
+    applyThemeColors();
+    saveThemeColors();
+    refreshThemeColorSwatches();
+  });
+  return input;
+});
+function saveThemeColors(message = '当前主题配色已保存') {
+  const status = document.getElementById('theme-colors-status');
+  try { localStorage.setItem('json-parse-theme-colors', JSON.stringify(customThemeColors)); status.textContent = message; }
+  catch { status.textContent = '已应用，但浏览器无法保存；刷新后会丢失。'; }
+}
+function refreshThemeColorSwatches() {
+  for (const choice of themeChoices) {
+    const colors = customThemeColors[choice.value] || themeColorDefaults[choice.value];
+    const swatch = choice.parentElement.querySelector('.theme-swatch');
+    swatch.style.setProperty('--swatch-bg', choice.value === 'glass' && !customThemeColors.glass ? 'linear-gradient(135deg,#d4c1ef,#a9dce9)' : colors[0]);
+    swatch.style.setProperty('--swatch-accent', colors[3]);
+  }
+}
+function refreshThemeColorControls() {
+  const theme = document.documentElement.dataset.theme || 'default';
+  const colors = customThemeColors[theme] || themeColorDefaults[theme];
+  themeColorInputs.forEach((input, index) => { input.value = colors[index]; });
+  document.getElementById('theme-colors-status').textContent = customThemeColors[theme] ? '使用自定义配色' : '使用默认配色';
+  refreshThemeColorSwatches();
+}
+document.getElementById('theme-colors-reset').onclick = () => {
+  const theme = document.documentElement.dataset.theme || 'default';
+  delete customThemeColors[theme];
+  applyThemeColors();
+  refreshThemeColorControls();
+  saveThemeColors('已恢复当前主题默认配色');
+};
+refreshThemeColorControls();
+</script>
+
 <script>
 'use strict';
 function tokenize(source) {
