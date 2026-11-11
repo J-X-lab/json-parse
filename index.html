@@ -88,7 +88,7 @@ input[type=checkbox]{accent-color:#295fe8;width:15px;height:15px}
 .panel-actions #copy{color:#295fe8;background:#eef3ff;border-color:#dce6ff}
 textarea,#viewer{width:100%;height:calc(100vh - 255px);min-height:360px;flex:1;border:0;border-radius:0;resize:none;padding:20px;background:#fff;color:#34445c;font:14px/1.85 Consolas,"SFMono-Regular","Microsoft YaHei",monospace;tab-size:2;scrollbar-width:thin;scrollbar-color:#bcc8d9 transparent}
 textarea{outline:none;background:#fdfefe}
-textarea:focus{box-shadow:inset 0 0 0 2px #d4e1ff}
+#input:focus{outline:none}
 textarea::placeholder{color:#94a0b2}
 #viewer{overflow:auto;padding-left:32px}
 .json-line,summary{white-space:pre-wrap;overflow-wrap:anywhere;border-radius:3px}
@@ -192,7 +192,6 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="neumorphic"] .panel-actions #copy.copied{background:#e5f5eb;color:#216640}
 [data-theme="neumorphic"] .panel :is(textarea,#viewer){border-color:#dce2ec;border-radius:14px;background:#f5f7fa;box-shadow:inset 2px 2px 6px #cbd3df55,inset -1px -1px 2px #fff;color:#3b4960}
 [data-theme="neumorphic"] .panel #viewer{background:#f8f9fc}
-[data-theme="neumorphic"] textarea:focus{border-color:#9daade;box-shadow:inset 2px 2px 5px #cbd3df55,0 0 0 2px #7485ce14}
 [data-theme="neumorphic"] textarea::placeholder{color:#728097}
 [data-theme="neumorphic"] #viewer:empty::before{color:#6f7d92}
 [data-theme="neumorphic"] .json-children{border-color:#dce2ef}
@@ -257,7 +256,6 @@ main{height:100dvh;min-height:0;overflow:hidden}
 [data-theme="midnight"] :focus-visible{outline-color:#8eb1ff}
 [data-theme="midnight"] ::selection{background:#375989;color:#fff}
 [data-theme="midnight"] :is(textarea,#viewer){background:#111b2a;color:#d7e2f2;scrollbar-color:#415674 transparent}
-[data-theme="midnight"] textarea:focus{box-shadow:inset 0 0 0 2px #587ab6}
 [data-theme="midnight"] textarea::placeholder,[data-theme="midnight"] #viewer:empty::before{color:#96a7bf}
 [data-theme="midnight"] .panel-actions button{background:transparent;color:#bdcce3;border-color:#354761}
 [data-theme="midnight"] .panel-actions :is(button,#copy):hover{background:#293d5c;border-color:#6987b3}
@@ -305,7 +303,6 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :focus-visible{outline-color:var(--t-accent)}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) ::selection{background:var(--t-accent);color:var(--t-on-accent)}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) :is(textarea,#viewer){background:var(--t-editor);color:var(--t-text);scrollbar-color:var(--t-muted) transparent}
-:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) textarea:focus{box-shadow:inset 0 0 0 2px var(--t-accent)}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) textarea::placeholder,:is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) #viewer:empty::before{color:var(--t-muted)}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions button{background:transparent;color:var(--t-text);border-color:var(--t-border)}
 :is([data-theme="paper"],[data-theme="mono"],[data-theme="terminal"],[data-theme="glass"],[data-theme="mint"]) .panel-actions :is(button,#copy):hover{background:var(--t-hover);border-color:var(--t-accent)}
@@ -422,7 +419,6 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :root[data-custom-colors] :is(h1,.theme-popover h2,.preset-heading h2,.panel-title){color:var(--custom-text);text-shadow:none}
 :root[data-custom-colors] :is(.subtitle,.panel-hint,.toolbar label,.theme-popover label,.preset-note,.preset-heading p,.preset-preview-badge),:root[data-custom-colors] #preset-dialog label{color:var(--custom-muted)}
 :root[data-custom-colors] :is(textarea,#viewer){background:var(--custom-surface);color:var(--custom-text);scrollbar-color:var(--custom-edge) transparent}
-:root[data-custom-colors] textarea:focus{box-shadow:inset 0 0 0 2px var(--custom-accent)}
 :root[data-custom-colors] textarea::placeholder,:root[data-custom-colors] #viewer:empty::before{color:var(--custom-muted)}
 :root[data-custom-colors] :is(button,select,.theme-settings>summary,.theme-card),:root[data-custom-colors] .panel-actions :is(button,#copy),:root[data-custom-colors] #preset-dialog :is(input,select){background:var(--custom-surface);color:var(--custom-text);border-color:var(--custom-edge)}
 :root[data-custom-colors] :is(button,select,.theme-settings>summary):hover,:root[data-custom-colors] .panel-actions :is(button,#copy):hover{background:var(--custom-tint);color:var(--custom-text);border-color:var(--custom-accent)}
@@ -452,8 +448,34 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :root[data-custom-colors][data-theme="glass"] .theme-grid input:checked+.theme-card,:root[data-custom-colors][data-theme="glass"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],:root[data-custom-colors][data-theme="glass"] .view-tabs button[aria-pressed="true"]{background:var(--custom-tint)}
 :root[data-custom-colors]:is([data-theme="glass"],[data-theme="neumorphic"]) button.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--custom-accent) 85%,#fff),var(--custom-accent));color:var(--custom-accent-ink)}
 :root[data-custom-colors] #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
+#viewer{--copy-ink:color-mix(in srgb,var(--menu-ink) 65%,var(--menu-bg));--copy-range:color-mix(in srgb,var(--menu-accent) 16%,transparent)}
+#viewer .json-row{position:relative;min-height:26px;padding-right:68px}
+#viewer .row-actions{position:absolute;right:4px;top:1px;display:flex;gap:5px;line-height:1;white-space:nowrap;opacity:0;pointer-events:none;user-select:none}
+#viewer .json-row:is(:hover,:focus-within)>.row-actions{opacity:1;pointer-events:auto}
+#viewer .row-actions button{display:grid;place-items:center;width:25px;min-width:25px;height:24px;min-height:24px;padding:0;border:0;border-radius:3px;background:transparent;color:var(--copy-ink);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;cursor:pointer}
+#viewer .row-actions button:is(:hover,:focus-visible,.copied){color:var(--menu-accent)}
+#viewer .row-actions button:focus-visible{outline:2px solid var(--menu-accent);outline-offset:1px}
+#viewer .row-actions button[aria-busy="true"]{cursor:wait}
+#viewer .row-actions svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.copy-back{opacity:.45;transition:transform .18s ease,opacity .18s ease}
+#viewer .row-actions button:is(:hover,:focus-visible) .copy-back{transform:translate(.8px,.8px);opacity:.75}
+#viewer .row-actions button.copied .copy-back{opacity:0}
+#viewer .copy-scope-pair>.json-content,#viewer .copy-scope-value>.json-content>.json-value,
+#viewer details.copy-scope-pair>summary>.json-content,#viewer details.copy-scope-value>summary>.json-content>.json-value,
+#viewer details:is(.copy-scope-pair,.copy-scope-value)>summary>.folded,
+#viewer details:is(.copy-scope-pair,.copy-scope-value)>.json-children,
+#viewer details:is(.copy-scope-pair,.copy-scope-value)>.json-close>.json-content{background:var(--copy-range);border-radius:3px}
+@media(hover:none){#viewer .row-actions{opacity:1;pointer-events:auto}}
+@media(prefers-reduced-motion:reduce){.copy-back{transition:none}}
 </style>
 
+<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <symbol id="row-copy-pair" viewBox="0 0 24 24"><path d="M8.5 3.5h-1A1.5 1.5 0 0 0 6 5v2.5c0 1.4-.7 2-2 2.5 1.3.5 2 1.1 2 2.5V15a1.5 1.5 0 0 0 1.5 1.5h1m4.5-13h1A1.5 1.5 0 0 1 15.5 5v2.5c0 1.4.7 2 2 2.5-1.3.5-2 1.1-2 2.5V15a1.5 1.5 0 0 1-1.5 1.5h-1"/></symbol>
+    <symbol id="row-copy-value" viewBox="0 0 24 24"><path d="M6 3.5h7.5l4 4v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Z"/><path d="M13 3.5v3a1.5 1.5 0 0 0 1.5 1.5h3"/></symbol>
+    <symbol id="row-copy-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+  </defs>
+</svg>
 <main>
 <header class="page-header">
   <div class="brand"><div id="logo-tilt" aria-hidden="true"><div class="logo"><svg class="logo-mark" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M17 12h-3a3 3 0 0 0-3 3v5c0 2-1 3-3 4 2 1 3 2 3 4v5a3 3 0 0 0 3 3h3" stroke="#B8EEFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 12h3a3 3 0 0 1 3 3v5c0 2 1 3 3 4-2 1-3 2-3 4v5a3 3 0 0 1-3 3h-3" stroke="#8FA9FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 18v12" stroke="#647DAF" stroke-width="1.5"/><rect x="21" y="15" width="6" height="6" rx="1.8" fill="#79E4EF"/><rect x="21" y="27" width="6" height="6" rx="1.8" fill="#B5C3FF"/><path d="M17 5h14M17 43h14" stroke="#FFFFFF" stroke-opacity=".15" stroke-linecap="round"/></svg></div></div><div><h1>JSON解析</h1><p class="subtitle">格式化、校验与阅读，一处完成</p></div></div>
@@ -712,9 +734,33 @@ function highlight(token, key = false) {
   const safe = token.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return '<span class="' + type + '">' + safe + '</span>';
 }
+const rowCopyActions = '<span class="row-actions">' + ['pair', 'value'].map(mode => {
+  const label = mode === 'pair' ? '复制键值对' : '仅复制值';
+  return '<button type="button" data-copy="' + mode + '" aria-label="' + label + '" title="' + label
+    + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="copy-back" d="M10 20.5h8a2 2 0 0 0 2-2v-8"/>'
+    + '<use href="#row-copy-' + mode + '"/></svg></button>';
+}).join('') + '</span>';
+function rowCopyText(source, start, value, end, mode, indent = '  ') {
+  const tokens = tokenize(source);
+  if (mode === 'value' && end === value + 1 && tokens[value][0] === '"') return JSON.parse(tokens[value]);
+  const formatted = formatJson(tokens.slice(value, end).join(''), indent, false);
+  return mode === 'pair' && start < value ? tokens[start] + ': ' + formatted : formatted;
+}
 function resultMarkup(source, compact = false) {
   const tokens = tokenize(source);
   if (compact) return tokens.map((token, i) => highlight(token, tokens[i + 1] === ':')).join('');
+  const pairs = [], stack = [];
+  tokens.forEach((token, i) => {
+    if (token === '{' || token === '[') stack.push(i);
+    else if (token === '}' || token === ']') {
+      const start = stack.pop();
+      pairs[start] = i; pairs[i] = start;
+    }
+  });
+  const range = i => ' data-copy-start="' + (tokens[i - 1] === ':' ? i - 2 : i)
+    + '" data-copy-value="' + i + '" data-copy-end="' + ((pairs[i] ?? i) + 1) + '"';
+  const content = (prefix, value) => '<span class="json-content">' + prefix
+    + '<span class="json-value">' + value + '</span></span>';
   let html = '', prefix = '';
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i], next = tokens[i + 1];
@@ -723,20 +769,21 @@ function resultMarkup(source, compact = false) {
       const close = token === '{' ? '}' : ']';
       if (next === close) {
         const comma = tokens[i + 2] === ',' ? ',' : '';
-        html += '<div class="json-line">' + prefix + highlight(token + close + comma) + '</div>';
+        html += '<div class="json-line json-row"' + range(i) + '>' + content(prefix, highlight(token + close)) + comma + rowCopyActions + '</div>';
         i += comma ? 2 : 1;
       } else {
-        html += '<details open><summary>' + prefix + highlight(token)
-          + '<span class="folded"> … ' + close + '</span></summary><div class="json-children">';
+        html += '<details open><summary class="json-row"' + range(i) + '>' + content(prefix, highlight(token))
+          + '<span class="folded"> … ' + close + '</span>' + rowCopyActions + '</summary><div class="json-children">';
       }
       prefix = '';
     } else if (token === '}' || token === ']') {
       const comma = next === ',' ? ',' : '';
-      html += '</div><div class="json-line">' + highlight(token + comma) + '</div></details>';
+      html += '</div><div class="json-line json-row json-close"' + range(pairs[i]) + '>'
+        + content('', highlight(token)) + comma + rowCopyActions + '</div></details>';
       if (comma) i++;
     } else {
       const comma = next === ',' ? ',' : '';
-      html += '<div class="json-line">' + prefix + highlight(token) + comma + '</div>';
+      html += '<div class="json-line json-row"' + range(i) + '>' + content(prefix, highlight(token)) + comma + rowCopyActions + '</div>';
       prefix = '';
       if (comma) i++;
     }
@@ -744,6 +791,7 @@ function resultMarkup(source, compact = false) {
   return html;
 }
 function updateView(compact = false) {
+  previewRowCopy(null);
   $('output').hidden = true;
   $('viewer').hidden = false;
   $('viewer').className = compact ? 'compact' : '';
@@ -757,6 +805,57 @@ function setExpanded(open) {
 const $ = id => document.getElementById(id);
 let timer;
 function message(text, error = false) { $('status').textContent = text; $('status').className = error ? 'error' : ''; }
+let rowCopyScope;
+function previewRowCopy(button) {
+  rowCopyScope?.classList.remove('copy-scope-pair', 'copy-scope-value');
+  rowCopyScope = null;
+  if (!button) return;
+  const row = button.closest('.json-row');
+  rowCopyScope = row.matches('summary,.json-close') ? row.parentElement : row;
+  rowCopyScope.classList.add('copy-scope-' + button.dataset.copy);
+}
+async function writeClipboard(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const active = document.activeElement;
+    const field = document.createElement('textarea');
+    field.value = text;
+    field.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0';
+    document.body.append(field);
+    field.select();
+    try {
+      if (!document.execCommand('copy')) throw new Error('浏览器未允许复制');
+    } finally { field.remove(); active?.focus({ preventScroll: true }); }
+  }
+}
+$('viewer').addEventListener('pointerover', event => previewRowCopy(event.target.closest('.row-actions button')));
+$('viewer').addEventListener('pointerleave', () => previewRowCopy(null));
+$('viewer').addEventListener('focusin', event => previewRowCopy(event.target.closest('.row-actions button')));
+$('viewer').addEventListener('focusout', () => previewRowCopy(null));
+$('viewer').addEventListener('click', async event => {
+  const button = event.target.closest('.row-actions button');
+  if (!button) return;
+  event.preventDefault(); event.stopPropagation();
+  if (button.getAttribute('aria-busy') === 'true' || button.classList.contains('copied')) return;
+  const row = button.closest('.json-row');
+  const { copyStart, copyValue, copyEnd } = row.dataset;
+  const label = button.title;
+  const indent = $('indent').value === 'tab' ? '\t' : ' '.repeat(Number($('indent').value));
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const text = rowCopyText($('output').value, +copyStart, +copyValue, +copyEnd, button.dataset.copy, indent);
+    await writeClipboard(text);
+    button.querySelector('use').setAttribute('href', '#row-copy-check');
+    button.classList.add('copied'); button.title = '已复制';
+    message(label + '成功');
+    setTimeout(() => {
+      button.querySelector('use').setAttribute('href', '#row-copy-' + button.dataset.copy);
+      button.classList.remove('copied'); button.title = label;
+    }, 1400);
+  } catch {
+    message('复制未成功，请允许剪贴板权限后重试', true);
+  } finally { button.removeAttribute('aria-busy'); }
+});
 function render(compact = false) {
   clearTimeout(timer);
   if (!$('input').value.trim()) { $('output').value = ''; updateView(); message('等待输入 JSON'); return; }
@@ -788,7 +887,7 @@ $('copy').onclick = async () => {
   button.disabled = true;
   button.textContent = '复制中…';
   try {
-    await navigator.clipboard.writeText($('output').value);
+    await writeClipboard($('output').value);
     button.textContent = '✓ 已复制';
     button.className = 'copied';
     message('复制成功，完整 JSON 已复制到剪贴板');
