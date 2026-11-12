@@ -8,14 +8,16 @@ function load(stored, blocked = false) {
   const properties = new Map(), nodes = {}, created = [];
   let saved = stored;
   const root = {dataset:{theme:'mint'},style:{setProperty:(key,value)=>properties.set(key,value),removeProperty:key=>properties.delete(key)}};
-  const node = () => ({style:root.style, append(){}, addEventListener(name,callback){this[name]=callback;}});
+  const node = () => ({style:root.style, append(child){child.parentElement=this;}, after(){}, addEventListener(name,callback){this[name]=callback;}});
+  const swatches = new Map();
+  const themeChoices = ['glass','mint'].map(value => ({value,parentElement:{querySelector:()=>({style:{setProperty:(key,color)=>swatches.set(value+key,color)}})}}));
   const context = {
     document:{documentElement:root,createElement(){const result=node();created.push(result);return result;},getElementById:id=>nodes[id]||(nodes[id]=node())},
-    themeChoices:[],
+    themeChoices,
     localStorage:{getItem(){if(blocked)throw Error('blocked');return saved;},setItem(key,value){assert.equal(key,'json-parse-theme-colors');if(blocked)throw Error('blocked');saved=value;}}
   };
   runInNewContext(source,context);
-  return {context,root,properties,nodes,created,saved:()=>saved};
+  return {context,root,properties,nodes,created,swatches,saved:()=>saved};
 }
 for (const bad of [null,'{broken','[]','null','{"mint":["red"]}','{"mint":["#112233"]}']) {
   const test=load(bad); assert.equal(test.root.dataset.customColors,undefined);
@@ -39,4 +41,42 @@ const invalid=JSON.parse(test.saved());invalid.mint[0]='url(https://example.com)
 assert.equal(load(JSON.stringify(invalid)).root.dataset.customColors,undefined);
 const blocked=load(null,true);const input=blocked.created.find(node=>node.id==='theme-color-accent');input.value='#ffcc00';input.input();
 assert.equal(blocked.properties.get('--custom-accent'),'#ffcc00');assert.ok(blocked.nodes['theme-colors-status'].textContent.includes('无法保存'));
-console.log('Theme color checks passed: validation, all themes, isolated reset, restore, blocked storage, accent contrast.');
+
+function choose(test, theme) {
+  test.root.dataset.theme=theme;test.context.applyThemeColors();test.context.refreshThemeColorControls();
+}
+function field(test, name) { return test.created.find(node=>node.id==='theme-color-'+name); }
+function edit(test, name, color) { const input=field(test,name);input.value=color;input.input(); }
+choose(test,'glass');
+assert.equal(field(test,'gradient-start').parentElement.hidden,false);
+assert.equal(field(test,'gradient-end').parentElement.hidden,false);
+assert.equal(field(test,'gradient-start').value,'#d4c1ef');
+assert.equal(field(test,'gradient-end').value,'#a9dce9');
+edit(test,'gradient-start','#ff8800');edit(test,'gradient-end','#00ccff');edit(test,'background','#112233');
+assert.equal(test.properties.get('--custom-gradient-start'),'#ff8800');
+assert.equal(test.properties.get('--custom-gradient-end'),'#00ccff');
+assert.equal(test.swatches.get('glass--swatch-bg'),'linear-gradient(135deg,#ff8800,#112233,#00ccff)');
+const palette=JSON.parse(test.saved()).glass;
+assert.equal(palette.length,12);
+const gradientRestored=load(test.saved());choose(gradientRestored,'glass');
+assert.equal(field(gradientRestored,'gradient-start').value,'#ff8800');
+assert.equal(field(gradientRestored,'gradient-end').value,'#00ccff');
+choose(gradientRestored,'mint');
+assert.equal(field(gradientRestored,'gradient-start').parentElement.hidden,true);
+assert.equal(gradientRestored.properties.has('--custom-gradient-start'),false);
+assert.equal(gradientRestored.properties.has('--custom-gradient-end'),false);
+choose(gradientRestored,'glass');gradientRestored.nodes['theme-colors-reset'].onclick();
+assert.equal(gradientRestored.root.dataset.customColors,undefined);
+assert.equal(field(gradientRestored,'gradient-start').value,'#d4c1ef');
+assert.equal(field(gradientRestored,'gradient-end').value,'#a9dce9');
+assert.deepEqual(JSON.parse(gradientRestored.saved()).mint,JSON.parse(test.saved()).mint);
+const legacy=load(JSON.stringify({glass:palette.slice(0,10)}));choose(legacy,'glass');
+assert.equal(legacy.properties.get('--custom-background'),'#112233');
+assert.equal(legacy.properties.get('--custom-gradient-start'),'#d4c1ef');
+edit(legacy,'gradient-end','#abcdef');
+assert.deepEqual(JSON.parse(legacy.saved()).glass,palette.slice(0,10).concat('#d4c1ef','#abcdef'));
+for(const bad of [palette.slice(0,11),palette.concat('#123456'),palette.slice(0,10).concat('url(x)','#123456')]) {
+  const invalid=load(JSON.stringify({glass:bad}));choose(invalid,'glass');assert.equal(invalid.root.dataset.customColors,undefined);
+}
+assert.equal(load(JSON.stringify({mint:palette})).root.dataset.customColors,undefined);
+console.log('Theme color checks passed: validation, themes, reset, storage, contrast, independent gradients, swatches and legacy migration.');
