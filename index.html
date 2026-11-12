@@ -11,7 +11,7 @@ try {
 } catch {} // Storage may be unavailable when opening a local file or in private mode.
 </script>
 <script id="theme-colors-init">
-const themeColorFields = ['background','surface','text','accent','key','string','number','boolean','null','punctuation'];
+const themeColorFields = ['background','surface','text','accent','key','string','number','boolean','null','punctuation','gradient-start','gradient-end'];
 const themeColorDefaults = {
   default:['#f3f5f9','#ffffff','#24334b','#295fe8','#7136a8','#245b36','#a14e16','#7d40af','#b43f64','#7a879b'],
   neumorphic:['#e9edf2','#e9edf2','#35425a','#5264ce','#6461a7','#347468','#a26939','#7d40af','#b43f64','#7a879b'],
@@ -19,7 +19,7 @@ const themeColorDefaults = {
   paper:['#eee6d8','#fbf5ea','#493d31','#97582f','#79513e','#526b43','#9a542d','#735980','#a14e5c','#756451'],
   mono:['#f2f2f2','#ffffff','#222222','#242424','#333333','#456451','#775a3e','#555e7b','#845461','#666666'],
   terminal:['#080e0b','#0d1711','#b2e9bc','#91e7a4','#a3ebaf','#83cf98','#dfd490','#abd2bd','#d4aa9b','#84b591'],
-  glass:['#e5eafa','#f3f5ff','#303b5d','#6358b7','#765496','#306c62','#935d31','#535d9e','#a44f74','#626d8b'],
+  glass:['#e8edfa','#f3f5ff','#303b5d','#6358b7','#765496','#306c62','#935d31','#535d9e','#a44f74','#626d8b','#d4c1ef','#a9dce9'],
   mint:['#e7f0e6','#f4f9ef','#2f4939','#427553','#496850','#376b58','#866135','#62724a','#93615f','#657b69']
 };
 function readThemeColors(value) {
@@ -27,7 +27,9 @@ function readThemeColors(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
   for (const theme of Object.keys(themeColorDefaults)) {
     const colors = value[theme];
-    if (Array.isArray(colors) && colors.length === themeColorFields.length && colors.every(color => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) result[theme] = colors;
+    if (!Array.isArray(colors) || !colors.every(color => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) continue;
+    if (colors.length === themeColorDefaults[theme].length) result[theme] = colors;
+    else if (theme === 'glass' && colors.length === 10) result[theme] = colors.concat(themeColorDefaults.glass.slice(10));
   }
   return result;
 }
@@ -48,7 +50,7 @@ function applyThemeColors() {
   delete root.dataset.customColors;
   if (!colors) return;
   root.dataset.customColors = 'true';
-  themeColorFields.forEach((field, index) => root.style.setProperty('--custom-' + field, colors[index]));
+  colors.forEach((color, index) => root.style.setProperty('--custom-' + themeColorFields[index], color));
   root.style.setProperty('--custom-accent-ink', themeAccentInk(colors[3]));
 }
 applyThemeColors();
@@ -403,6 +405,7 @@ main{height:100dvh;min-height:0;overflow:hidden}
 #theme-color-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .theme-popover #theme-color-fields label{margin:0;color:inherit}
 #theme-color-fields input{display:block;width:100%;height:30px;padding:3px;margin-top:5px;border:1px solid var(--menu-border);border-radius:6px;background:var(--menu-bg);cursor:pointer}
+[data-theme="glass"] #theme-color-fields label[for="theme-color-background"]{grid-column:1/-1}
 #theme-colors-reset{width:100%}
 #theme-colors-status{font-size:11px;line-height:1.6;opacity:.8;margin:8px 0 0}
 /* Overrides change colors only; each theme keeps its geometry and material. */
@@ -438,7 +441,7 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :root[data-custom-colors][data-theme="neumorphic"]{--neu-bg:var(--custom-background);--neu-raised:5px 5px 12px color-mix(in srgb,var(--custom-background) 78%,#000),-5px -5px 12px color-mix(in srgb,var(--custom-background) 40%,#fff);--neu-inset:inset 3px 3px 6px color-mix(in srgb,var(--custom-surface) 78%,#000),inset -3px -3px 6px color-mix(in srgb,var(--custom-surface) 40%,#fff)}
 :root[data-custom-colors][data-theme="neumorphic"] :is(button,.theme-settings>summary,.theme-card),:root[data-custom-colors][data-theme="neumorphic"] .panel-actions :is(button,#copy){background:linear-gradient(145deg,color-mix(in srgb,var(--custom-surface) 65%,#fff),var(--custom-surface));border-color:transparent;box-shadow:var(--neu-raised)}
 :root[data-custom-colors][data-theme="neumorphic"] :is(button:active,.theme-settings[open]>summary),:root[data-custom-colors][data-theme="neumorphic"] .panel-actions :is(button,#copy):active,:root[data-custom-colors][data-theme="neumorphic"] .theme-grid input:checked+.theme-card,:root[data-custom-colors][data-theme="neumorphic"] .view-tabs button[aria-pressed="true"],:root[data-custom-colors][data-theme="neumorphic"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"]{background:var(--custom-tint);border-color:transparent;box-shadow:var(--neu-inset)}
-:root[data-custom-colors][data-theme="glass"]{background:radial-gradient(ellipse at 5% 15%,color-mix(in srgb,var(--custom-accent) 22%,transparent),transparent 60%),var(--custom-background)}
+:root[data-custom-colors][data-theme="glass"]{background:radial-gradient(ellipse at 5% 15%,var(--custom-gradient-start) 0,transparent 55%),radial-gradient(ellipse at 95% 85%,var(--custom-gradient-end) 0,transparent 55%),var(--custom-background)}
 :root[data-custom-colors][data-theme="glass"] :is(.toolbar,.panel){background:color-mix(in srgb,var(--custom-surface) 70%,transparent);border-color:color-mix(in srgb,var(--custom-surface) 65%,#fff)}
 :root[data-custom-colors][data-theme="glass"] :is(button,.theme-settings>summary,.theme-card),:root[data-custom-colors][data-theme="glass"] .panel-actions :is(button,#copy){background:linear-gradient(145deg,color-mix(in srgb,var(--custom-surface) 80%,transparent),color-mix(in srgb,var(--custom-accent) 18%,transparent));border-color:color-mix(in srgb,var(--custom-surface) 60%,#fff)}
 :root[data-custom-colors][data-theme="glass"] .theme-grid input:checked+.theme-card,:root[data-custom-colors][data-theme="glass"] #preset-preview-grid .preset-preview-tile[aria-pressed="true"],:root[data-custom-colors][data-theme="glass"] .view-tabs button[aria-pressed="true"]{background:var(--custom-tint)}
@@ -656,7 +659,7 @@ document.addEventListener('keydown', event => {
 });
 </script>
 <script id="theme-color-controls">
-const themeColorLabels = ['页面背景','面板底色','正文文字','强调色','字段名','字符串','数字','布尔值','空值','标点'];
+const themeColorLabels = ['背景底色','面板底色','正文文字','强调色','字段名','字符串','数字','布尔值','空值','标点','左上渐变色','右下渐变色'];
 const themeColorInputs = themeColorFields.map((field, index) => {
   const label = document.createElement('label');
   label.textContent = themeColorLabels[index];
@@ -675,6 +678,7 @@ const themeColorInputs = themeColorFields.map((field, index) => {
   });
   return input;
 });
+themeColorInputs[0].parentElement.after(...themeColorInputs.slice(10).map(input => input.parentElement));
 function saveThemeColors(message = '当前主题配色已保存') {
   const status = document.getElementById('theme-colors-status');
   try { localStorage.setItem('json-parse-theme-colors', JSON.stringify(customThemeColors)); status.textContent = message; }
@@ -684,14 +688,17 @@ function refreshThemeColorSwatches() {
   for (const choice of themeChoices) {
     const colors = customThemeColors[choice.value] || themeColorDefaults[choice.value];
     const swatch = choice.parentElement.querySelector('.theme-swatch');
-    swatch.style.setProperty('--swatch-bg', choice.value === 'glass' && !customThemeColors.glass ? 'linear-gradient(135deg,#d4c1ef,#a9dce9)' : colors[0]);
+    swatch.style.setProperty('--swatch-bg', choice.value === 'glass' ? 'linear-gradient(135deg,' + colors[10] + ',' + colors[0] + ',' + colors[11] + ')' : colors[0]);
     swatch.style.setProperty('--swatch-accent', colors[3]);
   }
 }
 function refreshThemeColorControls() {
   const theme = document.documentElement.dataset.theme || 'default';
   const colors = customThemeColors[theme] || themeColorDefaults[theme];
-  themeColorInputs.forEach((input, index) => { input.value = colors[index]; });
+  themeColorInputs.forEach((input, index) => {
+    input.parentElement.hidden = index >= colors.length;
+    if (index < colors.length) input.value = colors[index];
+  });
   document.getElementById('theme-colors-status').textContent = customThemeColors[theme] ? '使用自定义配色' : '使用默认配色';
   refreshThemeColorSwatches();
 }
