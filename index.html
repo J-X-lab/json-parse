@@ -404,13 +404,10 @@ main{height:100dvh;min-height:0;overflow:hidden}
 @media(prefers-reduced-motion:reduce){.theme-color-editor>summary::after{transition:none}}
 #theme-color-fields{margin:10px 0}
 .theme-color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.theme-color-section-title,#theme-content-colors>summary{font-size:12px;font-weight:600;color:var(--menu-ink)}
-.theme-color-section-title{margin:12px 0 8px}
-#theme-content-colors{margin-top:14px;padding-top:4px;border-top:1px solid var(--menu-border)}
-#theme-content-colors>summary{display:flex;align-items:center;justify-content:space-between;padding:8px 0;list-style:none}
-#theme-content-colors>summary::-webkit-details-marker{display:none}
-#theme-content-colors>summary::after{content:"";width:6px;height:6px;margin-right:3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}
-#theme-content-colors[open]>summary::after{transform:rotate(225deg)}
+#theme-color-tabs{display:flex;gap:3px;margin-bottom:12px;padding:3px;border:1px solid var(--menu-border);border-radius:8px;background:var(--menu-hover)}
+#theme-color-tabs button{flex:1;min-height:30px;padding:5px 8px;border:0;border-radius:5px;background:transparent;color:var(--menu-ink);box-shadow:none;font-size:12px}
+#theme-color-tabs button:hover{color:var(--menu-accent)}
+#theme-color-tabs button[aria-selected="true"]{background:var(--menu-bg);color:var(--menu-accent);box-shadow:0 1px 3px color-mix(in srgb,var(--menu-ink) 12%,transparent)}
 .theme-popover #theme-color-fields label{margin:0;color:inherit}
 #theme-color-fields input{display:block;width:100%;height:30px;padding:3px;margin-top:5px;border:1px solid var(--menu-border);border-radius:6px;background:var(--menu-bg);cursor:pointer}
 [data-theme="glass"] #theme-color-fields label[for="theme-color-background"]{grid-column:1/-1}
@@ -556,12 +553,12 @@ main{height:100dvh;min-height:0;overflow:hidden}
     <details class="theme-color-editor" id="theme-color-editor"><summary aria-controls="theme-color-content">自定义当前主题颜色<span class="theme-color-state"><span class="theme-color-expand">展开</span><span class="theme-color-collapse">收起</span></span></summary>
       <div id="theme-color-content">
       <div id="theme-color-fields">
-        <h3 class="theme-color-section-title" id="theme-page-colors-title">页面</h3>
-        <div class="theme-color-grid" id="theme-page-fields" role="group" aria-labelledby="theme-page-colors-title"></div>
-        <details id="theme-content-colors">
-          <summary aria-controls="theme-content-fields">内容</summary>
-          <div class="theme-color-grid" id="theme-content-fields"></div>
-        </details>
+        <div id="theme-color-tabs" role="tablist" aria-label="调色板分类">
+          <button id="theme-page-tab" type="button" role="tab" aria-selected="true" aria-controls="theme-page-fields" tabindex="0">页面</button>
+          <button id="theme-content-tab" type="button" role="tab" aria-selected="false" aria-controls="theme-content-fields" tabindex="-1">内容</button>
+        </div>
+        <div class="theme-color-grid" id="theme-page-fields" role="tabpanel" aria-labelledby="theme-page-tab"></div>
+        <div class="theme-color-grid" id="theme-content-fields" role="tabpanel" aria-labelledby="theme-content-tab" hidden></div>
       </div>
       <button id="theme-colors-reset" type="button">恢复当前主题默认配色</button>
       <p id="theme-colors-status" role="status" aria-live="polite"></p>
@@ -674,6 +671,24 @@ document.addEventListener('keydown', event => {
 });
 </script>
 <script id="theme-color-controls">
+const themeColorTabs = ['page','content'].map(name => document.getElementById('theme-' + name + '-tab'));
+for (const [index, tab] of themeColorTabs.entries()) {
+  tab.addEventListener('click', () => {
+    for (const button of themeColorTabs) {
+      const selected = button === tab;
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      document.getElementById(button.getAttribute('aria-controls')).hidden = !selected;
+    }
+  });
+  tab.addEventListener('keydown', event => {
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : ['ArrowLeft','ArrowRight'].includes(event.key) ? 1 - index : null;
+    if (next === null) return;
+    event.preventDefault();
+    themeColorTabs[next].click();
+    themeColorTabs[next].focus();
+  });
+}
 const themeColorLabels = ['背景底色','面板底色','正文文字','强调色','字段名','字符串','数字','布尔值','空值','标点','左上渐变色','右下渐变色'];
 const themeColorInputs = themeColorFields.map((field, index) => {
   const label = document.createElement('label');
