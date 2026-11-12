@@ -445,6 +445,9 @@ main{height:100dvh;min-height:0;overflow:hidden}
 :root[data-custom-colors]:is([data-theme="glass"],[data-theme="neumorphic"]) button.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--custom-accent) 85%,#fff),var(--custom-accent));color:var(--custom-accent-ink)}
 :root[data-custom-colors] #bot-switch{background:transparent;border-color:transparent;box-shadow:none}
 #viewer{--copy-ink:color-mix(in srgb,var(--menu-ink) 65%,var(--menu-bg));--copy-range:color-mix(in srgb,var(--menu-accent) 16%,transparent)}
+#viewer .json-link{text-decoration:none;text-underline-offset:3px}
+#viewer .json-link:is(:hover,:focus-visible){text-decoration:underline dashed}
+#viewer .json-link:focus-visible{outline:1px solid currentColor;outline-offset:2px;border-radius:2px}
 #viewer .json-row{position:relative;min-height:26px;padding-right:68px}
 #viewer .row-actions{position:absolute;right:4px;top:1px;display:flex;gap:5px;line-height:1;white-space:nowrap;opacity:0;pointer-events:none;user-select:none}
 #viewer .json-row:is(:hover,:focus-within)>.row-actions{opacity:1;pointer-events:auto}
@@ -789,6 +792,15 @@ function highlight(token, key = false) {
     : token === 'null' ? 'null' : /^(true|false)$/.test(token) ? 'boolean'
     : /^-?\d/.test(token) ? 'number' : 'punctuation';
   const safe = token.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  if (type === 'string') {
+    const value = JSON.parse(token);
+    if (/^https?:\/\//i.test(value)) {
+      try {
+        const href = new URL(value).href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return '<a class="string json-link" href="' + href + '" target="_blank" rel="noopener noreferrer" title="Ctrl + 单击打开链接（Mac：⌘ + 单击）">' + safe + '</a>';
+      } catch { /* Invalid URLs remain plain text. */ }
+    }
+  }
   return '<span class="' + type + '">' + safe + '</span>';
 }
 const rowCopyActions = '<span class="row-actions">' + ['pair', 'value'].map(mode => {
@@ -891,6 +903,7 @@ $('viewer').addEventListener('pointerleave', () => previewRowCopy(null));
 $('viewer').addEventListener('focusin', event => previewRowCopy(event.target.closest('.row-actions button')));
 $('viewer').addEventListener('focusout', () => previewRowCopy(null));
 $('viewer').addEventListener('click', async event => {
+  if (event.target.closest('.json-link') && !event.ctrlKey && !event.metaKey && event.detail !== 0) event.preventDefault();
   const button = event.target.closest('.row-actions button');
   if (!button) return;
   event.preventDefault(); event.stopPropagation();
