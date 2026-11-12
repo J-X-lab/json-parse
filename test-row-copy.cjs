@@ -76,31 +76,22 @@ for (const value of ['javascript:alert(1)', 'data:text/html,<script>alert(1)</sc
 assert.ok(!context.resultMarkup('{"https://example.com":"key only"}').includes('json-link'));
 assert.match(context.resultMarkup('["https:\\/\\/example.com"]'), /href="https:\/\/example.com\/"/);
 const linkClickSource = html.split("$('viewer').addEventListener('click', async event => {")[1].split('  const button =')[0];
-for (const [isLink, ctrlKey, metaKey, detail, blocked, shouldOpen] of [
-  [true, false, false, 1, false, false], [true, true, false, 1, false, true],
-  [true, false, true, 1, false, true], [true, false, false, 0, false, true],
-  [true, true, false, 0, false, true], [false, false, false, 1, false, false],
-  [true, true, false, 1, true, true]
+for (const [isLink, ctrlKey, metaKey, detail, preventedDefault, shouldDefer] of [
+  [true, false, false, 1, true, false], [true, true, false, 1, true, true],
+  [true, false, true, 1, true, true], [true, false, false, 0, false, false],
+  [true, true, false, 0, true, true], [false, false, false, 1, false, false]
 ]) {
-  let prevented = false, error;
-  const actions = [], link = isLink ? { href: 'https://example.com/' } : null;
-  const tab = {
-    focus() { actions.push('focus'); },
-    set opener(value) { assert.equal(value, null); actions.push('isolate'); },
-    document: {
-      createElement(tag) { assert.equal(tag, 'meta'); return {}; },
-      head: { append(meta) { assert.deepEqual(meta, { name: 'referrer', content: 'no-referrer' }); actions.push('no-referrer'); } }
-    },
-    location: { replace(url) { assert.equal(url, link.href); actions.push('navigate'); } }
-  };
+  let prevented = false, clicks = 0;
+  const scheduled = [], link = isLink ? { click() { clicks++; } } : null;
   runInNewContext(linkClickSource, {
     event: { target: { closest: () => link }, ctrlKey, metaKey, detail, preventDefault() { prevented = true; } },
-    window: { open(url, target) { assert.equal(url, 'about:blank'); assert.equal(target, '_blank'); actions.push('open'); return blocked ? null : tab; } },
-    message(text, isError) { assert.equal(isError, true); error = text; }
+    setTimeout(callback, delay) { assert.equal(delay, 0); scheduled.push(callback); }
   });
-  assert.equal(prevented, isLink);
-  assert.deepEqual(actions, shouldOpen ? blocked ? ['open'] : ['open', 'focus', 'isolate', 'no-referrer', 'navigate'] : []);
-  if (blocked) assert.match(error, /浏览器拦截/); else assert.equal(error, undefined);
+  assert.equal(prevented, preventedDefault);
+  assert.equal(clicks, 0, 'Do not open while the Ctrl input event is being handled');
+  assert.equal(scheduled.length, Number(shouldDefer));
+  scheduled.forEach(callback => callback());
+  assert.equal(clicks, Number(shouldDefer));
 }
 
 // Clipboard fallback must neither overwrite the formatted output nor claim success on failure.
