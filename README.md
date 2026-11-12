@@ -14,6 +14,8 @@ https://j-x-lab.github.io/json-parse/
 例如 `$.flow[0].data.type` 与 `data["flow"][0]["data"]["type"]`；Python 根变量为 `data`。
 字段名中的点号、空格、引号等会正确转义。重新格式化保留仍存在的选中字段，清空、解析失败或压缩时清除路径。
 
+结果中的 HTTP/HTTPS 字符串链接支持 Ctrl + 左键（Mac：⌘ + 单击）在新标签页打开；普通点击仍选中字段，键盘聚焦后可按 Enter 打开。格式化与压缩视图均支持。
+
 ## 发布
 
 GitHub Settings → Pages → Deploy from a branch → main / (root)。
