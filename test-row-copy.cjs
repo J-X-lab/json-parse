@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { runInNewContext } = require('node:vm');
 const html = readFileSync(require('node:path').join(__dirname, 'index.html'), 'utf8');
-const context = {};
+const context = { URL };
 runInNewContext(html.slice(html.indexOf('function tokenize('), html.indexOf('function updateView(')), context);
 const source = '{"flow":[{"msg":"OK","code":200,"data":{"type":"title","escaped":"line\\n\\\"quote\\\"","empty":"","large":123456789012345678901234567890,"decimal":1.2300e+40,"nil":null,"flag":false,"object":{},"array":[]}}],"duplicate":1,"duplicate":2}';
 function rows(input) {
@@ -56,6 +56,34 @@ assert.ok(markup.includes('&lt;script&gt;'));
 assert.equal(copy(rows(unsafe)[1], 'value', unsafe), '<script>alert(1)</script>');
 assert.ok(!context.resultMarkup(source, true).includes('row-actions'));
 assert.throws(() => context.resultMarkup('{bad}'));
+
+// Links retain the original JSON text and copy values; only HTTP(S) URLs navigate.
+for (const url of ['https://example.com', 'http://localhost:8080/a?x=1&y=2#part', 'HTTPS://example.com/路径', 'https://example.com/?q="<tag>"']) {
+  const input = JSON.stringify({ url });
+  for (const compact of [false, true]) {
+    const markup = context.resultMarkup(input, compact);
+    assert.match(markup, /<a class="string json-link"/);
+    assert.match(markup, /target="_blank" rel="noopener noreferrer"/);
+    const href = markup.match(/<a [^>]*href="([^"]+)"/)[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    assert.equal(href, new URL(url).href);
+    assert.ok(!markup.includes('<tag>'));
+  }
+  assert.equal(copy(rows(input)[1], 'value', input), url);
+}
+for (const value of ['javascript:alert(1)', 'data:text/html,<script>alert(1)</script>', 'file:///tmp/a', '//example.com', 'see https://example.com', 'https://', 'https://bad host/']) {
+  assert.ok(!context.resultMarkup(JSON.stringify({ value })).includes('json-link'));
+}
+assert.ok(!context.resultMarkup('{"https://example.com":"key only"}').includes('json-link'));
+assert.match(context.resultMarkup('["https:\\/\\/example.com"]'), /href="https:\/\/example.com\/"/);
+const linkClickSource = html.split("$('viewer').addEventListener('click', async event => {")[1].split('  const button =')[0];
+for (const [link, ctrlKey, metaKey, detail, expected] of [
+  [true, false, false, 1, true], [true, true, false, 1, false],
+  [true, false, true, 1, false], [true, false, false, 0, false], [false, false, false, 1, false]
+]) {
+  let prevented = false;
+  runInNewContext(linkClickSource, { event: { target: { closest: () => link }, ctrlKey, metaKey, detail, preventDefault() { prevented = true; } } });
+  assert.equal(prevented, expected);
+}
 
 // Clipboard fallback must neither overwrite the formatted output nor claim success on failure.
 const clipboardSource = html.slice(html.indexOf('async function writeClipboard('), html.indexOf("$('viewer').addEventListener('pointerover'"));
