@@ -10,6 +10,10 @@ https://j-x-lab.github.io/json-parse/
 对象、数组的起始行和结束行均复制完整内容；字符串值去掉外层引号，其他值保留 JSON 表达及数字精度。
 支持键盘聚焦操作，触屏下直接显示图标。
 
+点击结果字段可查看并复制路径，在路径栏右侧切换 JSONPath 与 Python 取值表达式。
+例如 `$.flow[0].data.type` 与 `data["flow"][0]["data"]["type"]`；Python 根变量为 `data`。
+字段名中的点号、空格、引号等会正确转义。重新格式化保留仍存在的选中字段，清空、解析失败或压缩时清除路径。
+
 ## 发布
 
 GitHub Settings → Pages → Deploy from a branch → main / (root)。
