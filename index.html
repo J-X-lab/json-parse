@@ -904,21 +904,11 @@ $('viewer').addEventListener('focusin', event => previewRowCopy(event.target.clo
 $('viewer').addEventListener('focusout', () => previewRowCopy(null));
 $('viewer').addEventListener('click', async event => {
   const link = event.target.closest('.json-link');
-  if (link) {
+  if (link && (event.ctrlKey || event.metaKey)) {
     event.preventDefault();
-    if (event.ctrlKey || event.metaKey || event.detail === 0) {
-      const tab = window.open('about:blank', '_blank');
-      if (tab) {
-        // Focus while the blank tab still has an opener, then isolate it before navigation.
-        tab.focus();
-        tab.opener = null;
-        const referrer = tab.document.createElement('meta');
-        referrer.name = 'referrer'; referrer.content = 'no-referrer';
-        tab.document.head.append(referrer);
-        tab.location.replace(link.href);
-      } else message('新标签页被浏览器拦截，请允许此网站打开弹出式窗口后重试。', true);
-    }
-  }
+    // Leave the input event before opening, so Ctrl no longer selects a background tab.
+    setTimeout(() => link.click(), 0);
+  } else if (link && event.detail !== 0) event.preventDefault();
   const button = event.target.closest('.row-actions button');
   if (!button) return;
   event.preventDefault(); event.stopPropagation();
