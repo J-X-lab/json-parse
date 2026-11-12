@@ -483,6 +483,28 @@ main{height:100dvh;min-height:0;overflow:hidden}
 #result-more button{display:block;width:100%;text-align:left;font-size:12px;padding:8px 10px;min-height:34px}
 @media(min-width:681px) and (max-width:1130px){.panel-header{min-height:94px;align-items:flex-start;padding-top:12px}.result-panel>.panel-header{flex-wrap:wrap;gap:8px}.result-tools{width:100%;justify-content:flex-start;gap:7px}.result-tools button{padding:4px 7px}}
 @media(max-width:680px){.panel-header{min-height:52px;padding:9px 10px;gap:8px}.format-group{gap:5px}.format-group button{padding:4px 7px}.result-panel>.panel-header{flex-wrap:wrap;gap:10px}.result-panel>.panel-header>.panel-title{flex-basis:100%}.result-tools{width:100%;justify-content:flex-start;gap:8px}.result-tools button{padding:5px 9px}.result-tools .share-group{margin-left:auto}.result-tools>.action-divider{display:none}#more-actions-toggle{display:grid}}
+.path-inspector{display:flex;align-items:center;flex-shrink:0;min-width:0;background:color-mix(in srgb,var(--menu-accent) 3%,transparent);border-bottom:1px solid color-mix(in srgb,var(--menu-border) 65%,transparent)}
+#result-panel #path-copy{display:flex;align-items:center;flex:1;gap:11px;min-width:0;min-height:42px;padding:8px 16px;border:0;border-radius:0;background:transparent;color:var(--menu-ink);box-shadow:none;text-align:left;transition:background .18s ease}
+#result-panel #path-copy:hover:not(:disabled){background:color-mix(in srgb,var(--menu-accent) 8%,transparent)}
+#result-panel #path-copy:disabled{cursor:default;opacity:1;background:transparent}
+#path-copy .path-route{width:17px;height:17px;flex-shrink:0;fill:none;stroke:var(--menu-accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#path-copy:disabled .path-route{stroke:color-mix(in srgb,var(--menu-ink) 45%,var(--menu-bg))}
+#path-track{display:block;flex:1;min-width:0;overflow:auto;white-space:nowrap;scrollbar-width:none;font:13px/24px Consolas,"SFMono-Regular","Microsoft YaHei",monospace;color:color-mix(in srgb,var(--menu-ink) 65%,var(--menu-bg))}
+#path-track::-webkit-scrollbar{display:none}
+#path-track .path-leaf{color:var(--menu-accent);font-weight:600}
+#path-track .path-placeholder{font:12px/24px system-ui,sans-serif;color:color-mix(in srgb,var(--menu-ink) 60%,var(--menu-bg))}
+#path-copy .path-copy-icon{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+#path-copy:is(:hover,.path-copied) .path-copy-icon{opacity:1;color:var(--menu-accent)}
+#path-copy:disabled .path-copy-icon{visibility:hidden}
+#result-panel #path-copy.path-copied{background:color-mix(in srgb,var(--menu-accent) 11%,transparent)}
+.path-modes{display:flex;align-items:center;flex-shrink:0;gap:2px;margin-right:12px;padding:2px;border:1px solid color-mix(in srgb,var(--menu-border) 70%,transparent);border-radius:7px}
+#result-panel .path-modes button{min-height:24px;padding:3px 7px;border:0;border-radius:4px;box-shadow:none;background:transparent;color:color-mix(in srgb,var(--menu-ink) 65%,var(--menu-bg));font:11px/18px system-ui,sans-serif}
+#result-panel .path-modes button:is(:hover,[aria-pressed="true"]){background:var(--menu-hover);color:var(--menu-accent)}
+#viewer .json-row.path-selected{background:color-mix(in srgb,var(--menu-accent) 9%,transparent)}
+#viewer .json-row.path-selected::after{content:"";position:absolute;left:-4px;top:8px;bottom:8px;width:2px;border-radius:2px;background:var(--menu-accent)}
+.path-live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:680px){#result-panel #path-copy{padding:7px 10px;gap:8px;min-height:39px}#path-track{font-size:12px}.path-modes{margin-right:8px}#result-panel .path-modes button{padding:3px 5px}}
+@media(prefers-reduced-motion:reduce){#result-panel #path-copy{transition:none}}
 </style>
 
 <svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
@@ -552,6 +574,15 @@ main{height:100dvh;min-height:0;overflow:hidden}
       <button id="more-actions-toggle" type="button" popovertarget="result-more" aria-label="更多结果操作" title="更多结果操作"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
       <button id="format-settings-toggle" type="button" popovertarget="format-options" aria-label="格式设置" title="格式设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 3-.6 2.4-1.7 1L4.8 6.1l-2.5 4.3 1.8 1.7v1.8l-1.8 1.7 2.5 4.3 2.4-.7 1.7 1 .6 2.4h5l.6-2.4 1.7-1 2.4.7 2.5-4.3-1.8-1.7v-1.8l1.8-1.7-2.5-4.3-2.4.7-1.7-1L14.5 3z" transform="translate(0 -1)"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div></div>
+    <div class="path-inspector" id="path-inspector">
+      <button id="path-copy" type="button" disabled aria-label="复制 JSONPath">
+        <svg class="path-route" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 7v7a4 4 0 0 0 4 4h6M12 8h6M15 5l3 3-3 3"/></svg>
+        <code id="path-track"><span class="path-placeholder">点击字段，查看路径</span></code>
+        <svg class="path-copy-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#row-copy-value"/></svg>
+      </button>
+      <div class="path-modes" role="group" aria-label="路径格式"><button type="button" data-path-mode="jsonpath" aria-pressed="true">JSONPath</button><button type="button" data-path-mode="python" aria-pressed="false" title="Python 取值表达式，以 data 为根变量">Python</button></div>
+      <span id="path-live" class="path-live" role="status" aria-live="polite"></span>
+    </div>
     <div id="viewer" role="region" aria-labelledby="result-label" tabindex="0"></div>
     <textarea hidden aria-label="完整 JSON（复制备用）" id="output" spellcheck="false" readonly></textarea>
   </section>
@@ -823,6 +854,7 @@ function updateView(compact = false) {
   $('viewer').className = compact ? 'compact' : '';
   $('viewer').style.setProperty('--indent', ($('indent').value === '4' ? 4 : 2) + 'ch');
   $('viewer').innerHTML = $('output').value ? resultMarkup($('output').value, compact) : '';
+  refreshPathSelection(compact);
 }
 function setExpanded(open) {
   if (($('viewer').hidden || $('viewer').className === 'compact') && $('output').value) render();
@@ -1045,6 +1077,107 @@ function selectPane(view) {
 }
 $('tab-input').onclick = () => selectPane('input');
 $('tab-result').onclick = () => selectPane('result');
+</script>
+<script id="json-path">
+function pathParts(segments, mode = 'jsonpath') {
+  return [mode === 'python' ? 'data' : '$'].concat(segments.map(part => typeof part === 'number' ? '[' + part + ']'
+    : mode !== 'python' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(part) ? '.' + part : '[' + JSON.stringify(part) + ']'));
+}
+function jsonPathIndex(source) {
+  const tokens = tokenize(source), paths = new Map(), stack = [];
+  tokens.forEach((token, index) => {
+    if (token === '}' || token === ']') { stack.pop(); return; }
+    if (token === ':' || token === ',') return;
+    const parent = stack[stack.length - 1];
+    if (parent?.kind === '{' && tokens[index + 1] === ':') { parent.key = JSON.parse(token); return; }
+    const segments = parent ? parent.segments.concat(parent.kind === '[' ? parent.next++ : parent.key) : [];
+    paths.set(index, segments);
+    if (token === '{' || token === '[') stack.push({kind:token, segments, next:0, key:null});
+  });
+  return paths;
+}
+const refreshPathSelection = (() => {
+  const panel = $('path-inspector');
+  const track = $('path-track'), copy = $('path-copy'), feedback = $('path-live');
+  let paths = new Map(), selectedRow = null, currentPath = null, copyTimer, pathMode = 'jsonpath';
+  const modeLabel = () => pathMode === 'python' ? 'Python 取值路径' : 'JSONPath';
+  function resetPath() {
+    clearTimeout(copyTimer);
+    selectedRow?.classList.remove('path-selected');
+    selectedRow?.removeAttribute('aria-current');
+    selectedRow = null; currentPath = null;
+    copy.disabled = true; copy.classList.remove('path-copied');
+    copy.querySelector('use').setAttribute('href', '#row-copy-value');
+    track.innerHTML = '<span class="path-placeholder">' + ($('viewer').classList.contains('compact') ? '切换到格式化视图后选择字段' : '点击字段，查看路径') + '</span>';
+    copy.removeAttribute('title');
+    copy.setAttribute('aria-label', '复制 ' + modeLabel());
+    feedback.textContent = '';
+  }
+  function selectRow(row) {
+    if (!row || !paths.has(+row.dataset.copyValue)) return;
+    resetPath();
+    selectedRow = row;
+    row.classList.add('path-selected'); row.setAttribute('aria-current','true');
+    const parts = pathParts(paths.get(+row.dataset.copyValue), pathMode);
+    currentPath = parts.join('');
+    track.replaceChildren(...parts.map((part, i) => {
+      const span = document.createElement('span');
+      span.textContent = part;
+      if (i === parts.length - 1) span.className = 'path-leaf';
+      return span;
+    }));
+    copy.disabled = false;
+    copy.title = currentPath + '\n点击复制 ' + modeLabel();
+    copy.setAttribute('aria-label', '复制 ' + modeLabel() + ' ' + currentPath);
+    feedback.textContent = '当前 ' + modeLabel() + '：' + currentPath;
+    requestAnimationFrame(() => { track.scrollLeft = track.scrollWidth; });
+  }
+  $('viewer').addEventListener('click', event => {
+    const row = event.target.closest('.json-row');
+    if (!row) return;
+    if (row.matches('summary') && event.target.closest('.json-content')) event.preventDefault();
+    selectRow(row);
+  });
+  $('viewer').addEventListener('focusin', event => selectRow(event.target.closest('.json-row')));
+  const modeButtons = panel.querySelectorAll('[data-path-mode]');
+  modeButtons.forEach(button => button.addEventListener('click', () => {
+    pathMode = button.dataset.pathMode;
+    modeButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    if (selectedRow) selectRow(selectedRow); else resetPath();
+  }));
+  copy.addEventListener('click', async () => {
+    if (currentPath === null || copy.getAttribute('aria-busy') === 'true') return;
+    const copiedPath = currentPath;
+    clearTimeout(copyTimer);
+    copy.setAttribute('aria-busy', 'true');
+    try {
+      await writeClipboard(copiedPath);
+      if (currentPath !== copiedPath) return;
+      copy.classList.add('path-copied');
+      copy.querySelector('use').setAttribute('href','#row-copy-check');
+      copy.setAttribute('aria-label','已复制 ' + modeLabel() + ' ' + copiedPath);
+      feedback.textContent = '已复制：' + copiedPath;
+      copyTimer = setTimeout(() => {
+        copy.classList.remove('path-copied');
+        copy.querySelector('use').setAttribute('href','#row-copy-value');
+        copy.setAttribute('aria-label','复制 ' + modeLabel() + ' ' + currentPath);
+      }, 1400);
+    } catch { if (currentPath === copiedPath) feedback.textContent = '复制未成功，请允许剪贴板权限后重试'; }
+    finally { copy.removeAttribute('aria-busy'); }
+  });
+  return function(compact = false) {
+    const previousPath = currentPath;
+    resetPath();
+    paths = $('output').value && !compact ? jsonPathIndex($('output').value) : new Map();
+    if (previousPath === null) return;
+    for (const [index, segments] of paths) {
+      if (pathParts(segments, pathMode).join('') === previousPath) {
+        selectRow($('viewer').querySelector('[data-copy-value="' + index + '"]'));
+        break;
+      }
+    }
+  };
+})();
 </script>
 <script id="editor-layout">
 (() => {
